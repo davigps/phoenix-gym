@@ -20,7 +20,7 @@ defmodule Phoenixgym.Workouts do
 
     Workout
     |> where([w], w.status == "completed")
-    |> order_by([w], desc: w.finished_at)
+    |> order_by([w], desc: w.finished_at, desc: w.id)
     |> limit(^limit)
     |> offset(^offset)
     |> Repo.all()
