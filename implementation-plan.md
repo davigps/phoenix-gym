@@ -17,6 +17,7 @@
 9. [Component Library](#9-component-library)
 10. [State Management Strategy](#10-state-management-strategy)
 11. [Seeding the Exercise Library](#11-seeding-the-exercise-library)
+12. [Testing Strategy](#12-testing-strategy)
 
 ---
 
@@ -428,13 +429,18 @@ Using DaisyUI themes already configured in `app.css`:
 **Goal**: Database schema, seed data, contexts, core navigation shell.
 
 Tasks:
-- [ ] Create all 7 migrations
-- [ ] Define all Ecto schemas with changesets and associations
-- [ ] Create all context modules (exercises, routines, workouts, records)
-- [ ] Seed 200+ exercises into the database
-- [ ] Build the app shell: root layout with bottom tab bar navigation
-- [ ] Create placeholder LiveViews for all 5 tabs
-- [ ] Configure router with all LiveView routes
+- [x] Create all 7 migrations
+- [x] Define all Ecto schemas with changesets and associations
+- [x] Create all context modules (exercises, routines, workouts, records)
+- [x] Seed 200+ exercises into the database
+- [x] Build the app shell: root layout with bottom tab bar navigation
+- [x] Create placeholder LiveViews for all 5 tabs
+- [x] Configure router with all LiveView routes
+
+Testing tasks:
+- [x] Changeset unit tests for every schema: valid attrs succeed, required fields enforced, string-length constraints, enum/inclusion validations (`Exercise`, `Workout`, `WorkoutSet`, `PersonalRecord`)
+- [x] Context smoke tests: `create_*` / `get_*` / `update_*` / `delete_*` round-trips for each context using the test DB
+- [x] `seeds.exs` idempotency test: run seeds twice and assert no duplicate-key errors and correct record count (~200 exercises inserted)
 
 ### Phase 2 — Exercise Library
 
@@ -446,6 +452,12 @@ Tasks:
 - [ ] "Add Custom Exercise" form LiveView
 - [ ] Exercise picker component (reused in routine builder and active workout)
 - [ ] Muscle group and equipment badge components
+
+Testing tasks:
+- [ ] `Exercises` context: `search_exercises/1` returns correct subset for name query; `filter_exercises/1` correctly narrows by muscle, equipment, and category independently and combined; empty query returns all exercises
+- [ ] `ExerciseLive.Index` LiveView test: page mounts, typing in search box filters the list (`phx-change`), selecting a muscle chip further narrows results, list resets when filters cleared
+- [ ] `ExerciseLive.New` LiveView test: valid form submission creates exercise and flashes success; missing required fields shows inline errors; duplicate name shows error
+- [ ] `ExerciseLive.Show` LiveView test: exercise details rendered, PR section shows "no records yet" when empty
 
 ### Phase 3 — Routine Builder
 
@@ -462,6 +474,11 @@ Tasks:
 - [ ] Routine show/preview page
 - [ ] Duplicate routine action
 - [ ] Delete routine with confirmation
+
+Testing tasks:
+- [ ] `Routines` context: `create_routine/1` enforces name presence; `add_exercise_to_routine/3` assigns correct position; `reorder_exercises/2` updates positions atomically; `duplicate_routine/1` deep-copies exercises with correct positions; `delete_routine/1` cascades to `routine_exercises`
+- [ ] `RoutineLive.Index` LiveView test: empty state renders CTA; routines list renders cards with correct exercise count; delete flow shows confirmation modal then removes card
+- [ ] `RoutineLive.Edit` LiveView test: add exercise via picker appends to list; up/down reorder updates order in assigns; remove exercise removes row; save persists changes and redirects; unsaved changes warn on navigate away
 
 ### Phase 4 — Active Workout (Core Feature)
 
@@ -486,6 +503,14 @@ Tasks:
 - [ ] Finish workout: compute totals, mark PRs, save, redirect to workout detail
 - [ ] Discard workout with confirmation modal
 
+Testing tasks:
+- [ ] `Workouts` context: `create_workout/1` with and without routine; `add_exercise_to_workout/2` assigns correct position; `add_set/2` increments set number; `update_set/2` persists weight/reps/RPE changes; `toggle_set_complete/1` flips `is_completed`; `finish_workout/1` sets status, `finished_at`, and computes `total_volume`, `total_sets`, `total_reps` correctly; `discard_workout/1` sets status to `"discarded"`
+- [ ] `get_previous_sets/2` query: returns sets only from completed workouts for the given exercise, excludes current workout, ordered by most recent first
+- [ ] `WorkoutLive.Active` LiveView test — start from scratch: mounts in idle state; clicking "Start Workout" creates a DB record and enters in-progress; `add_set` event appends a row; `update_set` event updates assigns; `toggle_set_complete` marks row green; `finish_workout` redirects to `/workout/:id`
+- [ ] `WorkoutLive.Active` LiveView test — start from routine: exercises and target set count pre-populated from routine; previous sets displayed for exercises with history
+- [ ] `WorkoutLive.Active` LiveView test — crash recovery: re-mount with existing in-progress workout in DB restores all exercises and sets from DB
+- [ ] `WorkoutLive.Active` LiveView test — discard flow: confirmation modal shown; confirming deletes workout and redirects to history
+
 ### Phase 5 — History & Workout Detail
 
 **Goal**: View past sessions.
@@ -495,6 +520,11 @@ Tasks:
 - [ ] Workout detail view: full exercise/set breakdown, volume, duration
 - [ ] PR highlights within workout detail (star icon on PR sets)
 - [ ] Delete workout (with confirmation)
+
+Testing tasks:
+- [ ] `WorkoutLive.History` LiveView test: only completed workouts appear; most recent is first; each card shows correct date, duration, and volume; "Load More" / scroll appends next page without re-rendering existing items (stream correctness)
+- [ ] `WorkoutLive.Show` LiveView test: all exercises and sets rendered; PR-flagged sets show star indicator; delete button shows confirmation modal; confirming deletes and redirects to history
+- [ ] History query: `list_completed_workouts/1` returns only `status = "completed"` rows, ordered descending by `finished_at`, with correct pagination offsets
 
 ### Phase 6 — Personal Records & Stats
 
@@ -512,6 +542,13 @@ Tasks:
   - Recent PRs list
   - Streak counter
 
+Testing tasks:
+- [ ] `WorkoutStats.compute_prs/1` unit tests (pure logic, no DB): correctly identifies `max_weight`, `max_reps`, `max_volume_set` winners; estimated 1RM formula (`weight × (1 + reps/30)`) is accurate; no PR created when no existing record is beaten; new PR upserts correctly when beaten
+- [ ] `WorkoutStats.compute_prs/1` integration test: finish a workout with a new PR → `personal_records` row inserted; finish second workout with lower weight → no new row; finish third workout with higher weight → row updated/inserted with new value
+- [ ] `Records` context: `list_prs_for_exercise/1` returns one row per `record_type`; `get_recent_prs/1` returns latest N records ordered by `achieved_at`
+- [ ] Dashboard stats queries: `weekly_volume/0` returns 8 data points (one per week, zero-padded); `streak_count/0` returns correct consecutive-day count; `top_muscle_groups/1` returns correct ranking
+- [ ] `DashboardLive.Index` LiveView test: mounts with correct stat values; quick-start routines listed; chart SVG rendered with correct number of bars
+
 ### Phase 7 — Profile & Settings
 
 **Goal**: User preferences.
@@ -522,6 +559,11 @@ Tasks:
   - Unit toggle: kg / lbs (stored in session/ETS)
   - Theme toggle (light / dark / system)
 - [ ] Unit conversion applied globally: all weight inputs and displays convert based on preference
+
+Testing tasks:
+- [ ] Unit conversion pure-function tests: `kg_to_lbs/1` and `lbs_to_kg/1` round-trip within float tolerance; edge cases (0, very large values)
+- [ ] `ProfileLive.Index` LiveView test: unit toggle persists to session and re-mounts with the saved preference; switching to lbs re-renders a weight value using converted display
+- [ ] Cross-LiveView unit preference test: set preference to lbs in profile, navigate to active workout, verify weight inputs display lbs labels and previously stored kg values are converted correctly
 
 ### Phase 8 — Polish & PWA
 
@@ -536,6 +578,12 @@ Tasks:
 - [ ] Keyboard navigation improvements
 - [ ] Optimize queries (add indexes, avoid N+1 with preloads)
 - [ ] Mobile Safari scroll and input quirks fixes
+
+Testing tasks:
+- [ ] End-to-end flow integration test: seed DB → start workout from routine → add a set → complete set → add exercise mid-workout → finish workout → verify history shows the workout → verify PR was recorded
+- [ ] N+1 regression test: assert `list_workouts_with_exercises/0` issues a known maximum number of DB queries (use `Ecto.Sandbox` + query log counting)
+- [ ] Flash message test: invalid form submission renders an `alert` component with error text; successful action renders success flash
+- [ ] Empty state test: history page with no workouts renders "No workouts yet" CTA; exercise library with no search results renders "No exercises found" message
 
 ---
 
@@ -764,6 +812,113 @@ end
 
 Each exercise seed entry includes:
 - `name`, `category`, `primary_muscle`, `equipment`, `is_custom: false`
+
+---
+
+## 12. Testing Strategy
+
+### 12.1 Test Structure
+
+```
+test/
+├── phoenixgym/
+│   ├── exercises/
+│   │   └── exercises_test.exs          # context + changeset tests
+│   ├── routines/
+│   │   └── routines_test.exs
+│   ├── workouts/
+│   │   ├── workouts_test.exs
+│   │   └── workout_stats_test.exs      # PR computation (pure logic + integration)
+│   └── records/
+│       └── records_test.exs
+│
+├── phoenixgym_web/
+│   └── live/
+│       ├── dashboard_live_test.exs
+│       ├── exercise_live_test.exs
+│       ├── routine_live_test.exs
+│       ├── workout_live/
+│       │   ├── active_test.exs         # most extensive — state machine flows
+│       │   ├── history_test.exs
+│       │   └── show_test.exs
+│       └── profile_live_test.exs
+│
+└── support/
+    ├── fixtures.ex                     # factory helpers (no external deps)
+    ├── conn_case.ex                    # base case for controller/LiveView tests
+    └── data_case.ex                    # base case for context/schema tests
+```
+
+### 12.2 Testing Layers
+
+| Layer | Tool | What to test |
+|---|---|---|
+| Schema/changeset | `DataCase` + `Ecto.Changeset` | Required fields, type coercions, inclusion validations |
+| Context functions | `DataCase` (sandbox DB) | Query correctness, business logic, cascade deletes |
+| Pure business logic | Plain ExUnit (no DB) | PR computation, unit conversion, volume aggregation |
+| LiveView UI & events | `Phoenix.LiveViewTest` | Mount, `phx-change`/`phx-click` events, DOM assertions |
+| Integration flows | `ConnCase` + `LiveViewTest` | Multi-step user journeys spanning multiple LiveViews |
+
+### 12.3 Test Fixtures
+
+Use a lightweight `test/support/fixtures.ex` module with builder functions instead of a factory library:
+
+```elixir
+defmodule Phoenixgym.Fixtures do
+  alias Phoenixgym.{Exercises, Routines, Workouts}
+
+  def exercise_fixture(attrs \\ %{}) do
+    {:ok, exercise} =
+      attrs
+      |> Enum.into(%{name: "Test Exercise", category: "strength",
+                     primary_muscle: "chest", equipment: "barbell"})
+      |> Exercises.create_exercise()
+    exercise
+  end
+
+  def routine_fixture(attrs \\ %{}) do
+    {:ok, routine} =
+      attrs |> Enum.into(%{name: "Test Routine"}) |> Routines.create_routine()
+    routine
+  end
+
+  def completed_workout_fixture(attrs \\ %{}) do
+    exercise = exercise_fixture()
+    {:ok, workout} = Workouts.create_workout(%{name: "Test", status: "completed",
+                       started_at: ~U[2024-01-01 10:00:00Z],
+                       finished_at: ~U[2024-01-01 11:00:00Z]})
+    {:ok, we} = Workouts.add_exercise_to_workout(workout, exercise)
+    {:ok, set} = Workouts.add_set(we, %{weight: 100.0, reps: 5, set_type: "normal",
+                                        is_completed: true})
+    %{workout: workout, workout_exercise: we, set: set, exercise: exercise}
+  end
+end
+```
+
+### 12.4 LiveView Testing Conventions
+
+- Use `Phoenix.LiveViewTest.live/2` to mount LiveViews; assert on rendered HTML with `assert html =~ "text"`
+- Use `element/2` + `render_click/1` for button interactions; `render_change/2` for form inputs
+- Stub JS hooks in tests by verifying server-side state changes (hooks update server via `push_event`/`handle_event` — test the handler, not the JS)
+- Use `assert_patch/2` and `assert_redirect/2` for navigation assertions
+
+### 12.5 Async & Sandbox
+
+- All DB tests use `Ecto.Adapters.SQL.Sandbox` with `async: true` (default Phoenix DataCase setup)
+- LiveView tests use `async: false` only when testing session-dependent behavior (unit preference)
+- Never use `Process.sleep` in tests; use `render_async/1` for async assigns
+
+### 12.6 Coverage Targets
+
+| Area | Target |
+|---|---|
+| Context modules | 90%+ line coverage |
+| Schema changesets | 100% (all validations exercised) |
+| PR computation logic | 100% branch coverage |
+| LiveView event handlers | 80%+ (all `handle_event` clauses) |
+| Integration flows | 1 happy-path test per major feature |
+
+Run coverage with: `mix test --cover` (built-in ExCoveralls or `mix coveralls.html`)
 
 ---
 
