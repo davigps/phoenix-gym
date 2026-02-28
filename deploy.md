@@ -106,8 +106,8 @@ Use your real GitHub username and repo URL.
 | `SECRET_KEY_BASE` | The value from `mix phx.gen.secret` (Step 1.2) |
 | `PHX_HOST` | Your public hostname, e.g. `phoenixgym.up.railway.app` (you’ll get this in Step 5) |
 | `ECTO_IPV6` | `true` (so the app can reach Postgres over Railway’s network) |
-| `LANG` | `en_US.UTF-8` |
-| `LC_CTYPE` | `en_US.UTF-8` |
+| `LANG` | `C.UTF-8` (avoids “setlocale: cannot change locale” on minimal images) |
+| `LC_CTYPE` | `C.UTF-8` |
 
 Railway sets `PORT` automatically; your `config/runtime.exs` already uses it.
 
@@ -116,11 +116,11 @@ Railway sets `PORT` automatically; your `config/runtime.exs` already uses it.
 The app runs as an **Elixir release** (no `mix` at runtime). The start command runs the release’s `bin/migrate` then `bin/server`, so migrations run automatically on every deploy.
 
 - **Nixpacks:** The repo’s `nixpacks.toml` defines the start command. Leave **“Start Command”** in Railway **empty** so it uses that.
-- **Railpack** (Railway’s newer builder): If you see `mix: command not found` in logs, Railway is using Railpack. Set **“Start Command”** in the Phoenix app service to:
+- **Railpack** (Railway’s newer builder): If you see `mix: command not found` or `Permission denied` in logs, set **“Start Command”** in the Phoenix app service to:
   ```bash
-  _build/prod/rel/phoenixgym/bin/migrate && _build/prod/rel/phoenixgym/bin/server
+  LC_ALL=C.UTF-8 LANG=C.UTF-8 sh _build/prod/rel/phoenixgym/bin/migrate && exec sh _build/prod/rel/phoenixgym/bin/server
   ```
-  so the release runs migrations then starts (no `mix` needed).
+  Use `sh` so script execute bits don’t matter; set locale so you avoid setlocale warnings.
 
 ---
 

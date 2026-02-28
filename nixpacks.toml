@@ -24,9 +24,10 @@ cmds = [
 cmds = [
   "mix assets.deploy",
   "mix compile",
-  "mix release"
+  "mix release",
+  "chmod +x _build/prod/rel/phoenixgym/bin/*"
 ]
 
 [start]
-# Use release binaries (no mix at runtime). Migrate then start the server.
-cmd = "_build/prod/rel/phoenixgym/bin/migrate && _build/prod/rel/phoenixgym/bin/server"
+# Run scripts with sh (no execute-bit reliance). Set locale in command so it overrides platform env.
+cmd = "LC_ALL=C.UTF-8 LANG=C.UTF-8 sh _build/prod/rel/phoenixgym/bin/migrate && exec sh _build/prod/rel/phoenixgym/bin/server"
