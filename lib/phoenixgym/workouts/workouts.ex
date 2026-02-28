@@ -135,20 +135,23 @@ defmodule Phoenixgym.Workouts do
         Decimal.add(acc, Decimal.mult(weight, Decimal.new(reps)))
       end)
 
-    {:ok, updated} =
-      workout
-      |> Workout.changeset(%{
-        status: "completed",
-        finished_at: finished_at,
-        duration_seconds: duration,
-        total_sets: total_sets,
-        total_reps: total_reps,
-        total_volume: total_volume
-      })
-      |> Repo.update()
+    case workout
+         |> Workout.changeset(%{
+           status: "completed",
+           finished_at: finished_at,
+           duration_seconds: duration,
+           total_sets: total_sets,
+           total_reps: total_reps,
+           total_volume: total_volume
+         })
+         |> Repo.update() do
+      {:ok, updated} ->
+        Records.compute_and_save_prs(updated)
+        {:ok, updated}
 
-    Records.compute_and_save_prs(updated)
-    {:ok, updated}
+      error ->
+        error
+    end
   end
 
   @doc "Discards an in-progress workout."

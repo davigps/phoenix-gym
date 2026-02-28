@@ -369,8 +369,6 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   def handle_event("finish", _params, socket) do
     case Workouts.finish_workout(socket.assigns.workout) do
       {:ok, workout} ->
-        Phoenixgym.Records.compute_and_save_prs(workout)
-
         {:noreply,
          socket
          |> put_flash(:info, "Workout completed!")
