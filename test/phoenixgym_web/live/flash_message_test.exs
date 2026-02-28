@@ -8,6 +8,8 @@ defmodule PhoenixgymWeb.FlashMessageTest do
   import Phoenix.LiveViewTest
 
   describe "flash messages" do
+    setup :register_and_log_in_user
+
     test "invalid form submission shows error and alert component", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/exercises/new")
 

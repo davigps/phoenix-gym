@@ -5,6 +5,8 @@ defmodule PhoenixgymWeb.DashboardLiveTest do
   import Phoenixgym.Fixtures
 
   describe "Dashboard mount and content" do
+    setup :register_and_log_in_user
+
     test "mounts with stat values", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/")
 

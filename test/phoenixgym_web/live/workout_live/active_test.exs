@@ -10,6 +10,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Start from scratch ────────────────────────────────────────────────────
 
   describe "start from scratch" do
+    setup :register_and_log_in_user
+
     test "mounts in idle state when no workout exists", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/workout/active")
 
@@ -174,6 +176,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Start from routine ────────────────────────────────────────────────────
 
   describe "start from routine" do
+    setup :register_and_log_in_user
+
     test "exercises pre-populated when workout started from routine", %{conn: conn} do
       ex1 = exercise_fixture(%{"name" => "RoutineEx1_#{System.unique_integer()}"})
       ex2 = exercise_fixture(%{"name" => "RoutineEx2_#{System.unique_integer()}"})
@@ -247,6 +251,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Crash recovery ────────────────────────────────────────────────────────
 
   describe "crash recovery" do
+    setup :register_and_log_in_user
+
     test "re-mounting with existing in-progress workout restores all exercises and sets", %{
       conn: conn
     } do
@@ -287,6 +293,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Discard flow ──────────────────────────────────────────────────────────
 
   describe "discard flow" do
+    setup :register_and_log_in_user
+
     test "clicking discard shows confirmation modal", %{conn: conn} do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
@@ -327,6 +335,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Exercise reordering ───────────────────────────────────────────────────
 
   describe "exercise reordering" do
+    setup :register_and_log_in_user
+
     test "move_exercise_down swaps exercise with the one below", %{conn: conn} do
       ex1 = exercise_fixture(%{"name" => "FirstExercise_#{System.unique_integer()}"})
       ex2 = exercise_fixture(%{"name" => "SecondExercise_#{System.unique_integer()}"})
@@ -393,6 +403,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Rest timer ────────────────────────────────────────────────────────────
 
   describe "rest timer" do
+    setup :register_and_log_in_user
+
     test "rest timer shown after completing a set", %{conn: conn} do
       exercise = exercise_fixture()
 
@@ -448,6 +460,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Add exercise mid-workout ──────────────────────────────────────────────
 
   describe "add exercise mid-workout" do
+    setup :register_and_log_in_user
+
     test "picker search filters exercises by name", %{conn: conn} do
       unique = "SearchEx_#{System.unique_integer()}"
       exercise_fixture(%{"name" => unique})

@@ -1,5 +1,8 @@
 import Config
 
+# Only in tests, reduce password hashing cost for speed
+config :pbkdf2_elixir, :rounds, 1
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

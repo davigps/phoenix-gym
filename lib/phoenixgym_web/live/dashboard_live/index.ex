@@ -11,7 +11,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} active_tab={:dashboard}>
+    <Layouts.app flash={@flash} active_tab={:dashboard} current_scope={@current_scope}>
       <div class="p-4 space-y-4">
         <h1 class="text-2xl font-bold">{gettext("PhoenixGym")}</h1>
 

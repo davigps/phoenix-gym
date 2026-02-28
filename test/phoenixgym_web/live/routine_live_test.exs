@@ -9,6 +9,8 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
   # ── RoutineLive.Index ─────────────────────────────────────────────────────
 
   describe "RoutineLive.Index" do
+    setup :register_and_log_in_user
+
     test "shows empty state CTA when no routines exist", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/routines")
 
@@ -84,6 +86,8 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
   # ── RoutineLive.Show ──────────────────────────────────────────────────────
 
   describe "RoutineLive.Show" do
+    setup :register_and_log_in_user
+
     test "renders routine name and exercises", %{conn: conn} do
       routine = routine_fixture(%{"name" => "ShowTestRoutine#{System.unique_integer()}"})
       exercise = exercise_fixture(%{"name" => "ShowTestExercise#{System.unique_integer()}"})
@@ -185,6 +189,8 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
   # ── RoutineLive.Edit ──────────────────────────────────────────────────────
 
   describe "RoutineLive.Edit" do
+    setup :register_and_log_in_user
+
     test "mounts and shows routine name and notes form", %{conn: conn} do
       routine =
         routine_fixture(%{

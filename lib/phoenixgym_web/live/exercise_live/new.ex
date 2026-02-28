@@ -8,7 +8,7 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} active_tab={:exercises}>
+    <Layouts.app flash={@flash} active_tab={:exercises} current_scope={@current_scope}>
       <div class="flex flex-col">
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-2">

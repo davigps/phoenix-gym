@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :phoenixgym, :scopes,
+  user: [
+    default: true,
+    module: Phoenixgym.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :id,
+    schema_table: :users,
+    test_data_fixture: Phoenixgym.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 config :phoenixgym,
   ecto_repos: [Phoenixgym.Repo],
   generators: [timestamp_type: :utc_datetime]

@@ -8,6 +8,8 @@ defmodule PhoenixgymWeb.EmptyStateTest do
   import Phoenix.LiveViewTest
 
   describe "empty states" do
+    setup :register_and_log_in_user
+
     test "history page with no workouts renders 'No workouts yet' CTA", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/workout/history")
 

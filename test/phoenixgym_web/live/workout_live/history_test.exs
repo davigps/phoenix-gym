@@ -7,6 +7,8 @@ defmodule PhoenixgymWeb.WorkoutLive.HistoryTest do
   alias Phoenixgym.Workouts
 
   describe "WorkoutLive.History" do
+    setup :register_and_log_in_user
+
     test "only completed workouts appear; in_progress and discarded do not", %{conn: conn} do
       %{workout: completed} = completed_workout_fixture()
       {:ok, _in_progress} = Workouts.start_workout(%{"name" => "In Progress"})

@@ -7,6 +7,8 @@ defmodule PhoenixgymWeb.ProfileLiveTest do
   import Phoenixgym.Fixtures
 
   describe "ProfileLive.Index" do
+    setup :register_and_log_in_user
+
     test "mounts with default unit kg when session has no unit", %{conn: conn} do
       {:ok, view, html} = live(conn, "/profile")
 
@@ -47,6 +49,8 @@ defmodule PhoenixgymWeb.ProfileLiveTest do
 
   describe "cross-LiveView unit preference" do
     @moduletag :async_false
+    setup :register_and_log_in_user
+
     test "unit set to lbs in profile shows lbs labels and converted weights in active workout", %{
       conn: conn
     } do

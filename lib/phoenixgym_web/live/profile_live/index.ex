@@ -6,7 +6,7 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} active_tab={:profile}>
+    <Layouts.app flash={@flash} active_tab={:profile} current_scope={@current_scope}>
       <div class="flex flex-col">
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
@@ -14,6 +14,34 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
         </div>
 
         <div class="p-4 space-y-6">
+          <%!-- Account (email + auth) --%>
+          <div class="card bg-base-200">
+            <div class="card-body p-4">
+              <h2 class="card-title text-base">{gettext("Account")}</h2>
+              <p :if={@current_scope && @current_scope.user} class="text-sm text-base-content/80">
+                {@current_scope.user.email}
+              </p>
+              <div class="flex flex-col gap-2 mt-2">
+                <.link
+                  navigate={~p"/users/settings"}
+                  class="btn btn-sm btn-outline justify-start"
+                >
+                  <.icon name="hero-cog-6-tooth" class="h-4 w-4" />
+                  {gettext("Account settings")}
+                </.link>
+                <.link
+                  href={~p"/users/log-out"}
+                  method="delete"
+                  class="btn btn-sm btn-outline btn-error justify-start text-error"
+                  data-confirm={gettext("Are you sure you want to log out?")}
+                >
+                  <.icon name="hero-arrow-right-on-rectangle" class="h-4 w-4" />
+                  {gettext("Log out")}
+                </.link>
+              </div>
+            </div>
+          </div>
+
           <%!-- Display Name --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">

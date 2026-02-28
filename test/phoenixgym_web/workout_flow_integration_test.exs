@@ -14,6 +14,8 @@ defmodule PhoenixgymWeb.WorkoutFlowIntegrationTest do
   alias Phoenixgym.Records
 
   describe "full workout flow from routine to history and PR" do
+    setup :register_and_log_in_user
+
     test "complete flow: start from routine, add set, complete set, add exercise, finish; history and PR updated",
          %{
            conn: conn

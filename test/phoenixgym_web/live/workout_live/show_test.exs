@@ -7,6 +7,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
   alias Phoenixgym.Workouts
 
   describe "WorkoutLive.Show" do
+    setup :register_and_log_in_user
+
     test "all exercises and sets rendered", %{conn: conn} do
       %{workout: workout, exercise: exercise, set: set} = completed_workout_fixture()
       workout = Workouts.get_workout!(workout.id)

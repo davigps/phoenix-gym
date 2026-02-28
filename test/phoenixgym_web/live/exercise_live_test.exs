@@ -9,6 +9,8 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
   # ── ExerciseLive.Index ────────────────────────────────────────────────────
 
   describe "ExerciseLive.Index" do
+    setup :register_and_log_in_user
+
     test "page mounts and renders exercise list", %{conn: conn} do
       exercise = exercise_fixture(%{"name" => "Deadlift Test", "primary_muscle" => "back"})
 
@@ -156,6 +158,8 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
   # ── ExerciseLive.New ─────────────────────────────────────────────────────
 
   describe "ExerciseLive.New" do
+    setup :register_and_log_in_user
+
     test "page mounts and renders form", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/exercises/new")
 
@@ -271,6 +275,8 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
   # ── ExerciseLive.Show ────────────────────────────────────────────────────
 
   describe "ExerciseLive.Show" do
+    setup :register_and_log_in_user
+
     test "renders exercise details", %{conn: conn} do
       exercise =
         exercise_fixture(%{

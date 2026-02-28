@@ -10,7 +10,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} active_tab={:workout}>
+    <Layouts.app flash={@flash} active_tab={:workout} current_scope={@current_scope}>
       <div class="flex flex-col">
         <%= if @workout do %>
           <%!-- Active Workout Header --%>
