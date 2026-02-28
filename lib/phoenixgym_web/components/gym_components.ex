@@ -1,6 +1,8 @@
 defmodule PhoenixgymWeb.GymComponents do
   use PhoenixgymWeb, :html
 
+  alias Phoenixgym.Units
+
   @moduledoc """
   App-specific DaisyUI components for PhoenixGym.
   """
@@ -150,6 +152,7 @@ defmodule PhoenixgymWeb.GymComponents do
   # ── Workout Card (History) ───────────────────────────────────────────────
 
   attr :workout, :map, required: true
+  attr :unit, :string, default: "kg"
 
   def workout_card(assigns) do
     ~H"""
@@ -171,7 +174,7 @@ defmodule PhoenixgymWeb.GymComponents do
           </span>
           <span :if={@workout.total_volume} class="flex items-center gap-1">
             <.icon name="hero-bolt" class="h-4 w-4" />
-            {format_volume(@workout.total_volume)} kg
+            {Units.display_weight(@workout.total_volume, @unit)}
           </span>
           <span :if={@workout.total_sets} class="flex items-center gap-1">
             <.icon name="hero-squares-2x2" class="h-4 w-4" />
@@ -208,6 +211,7 @@ defmodule PhoenixgymWeb.GymComponents do
   # ── PR Badge ────────────────────────────────────────────────────────────
 
   attr :record, :map, required: true
+  attr :unit, :string, default: "kg"
 
   def pr_badge(assigns) do
     ~H"""
@@ -216,7 +220,7 @@ defmodule PhoenixgymWeb.GymComponents do
       <div class="text-sm">
         <span class="font-medium">{@record.exercise && @record.exercise.name}</span>
         <span class="text-base-content/60 ml-1">{pr_label(@record.record_type)}</span>
-        <span class="font-bold ml-1">{format_pr_value(@record)}</span>
+        <span class="font-bold ml-1">{format_pr_value(@record, @unit)}</span>
       </div>
     </div>
     """
@@ -229,8 +233,10 @@ defmodule PhoenixgymWeb.GymComponents do
   defp pr_label("max_volume_session"), do: "Max Session Volume"
   defp pr_label(type), do: type
 
-  defp format_pr_value(%{record_type: "max_reps", value: v}), do: "#{Decimal.to_integer(v)} reps"
-  defp format_pr_value(%{value: v}), do: "#{Decimal.round(v, 1)} kg"
+  defp format_pr_value(%{record_type: "max_reps", value: v}, _unit),
+    do: "#{Decimal.to_integer(v)} reps"
+
+  defp format_pr_value(%{value: v}, unit), do: Units.display_weight(v, unit)
 
   # ── Confirm Modal ───────────────────────────────────────────────────────
 

@@ -6,6 +6,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
   alias Phoenixgym.Stats
   alias Phoenixgym.Records
   alias Phoenixgym.Routines
+  alias Phoenixgym.Units
 
   @impl true
   def render(assigns) do
@@ -44,8 +45,8 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
           </div>
           <div class="stat bg-base-200 rounded-box p-3">
             <div class="stat-title text-xs">Volume</div>
-            <div class="stat-value text-xl">{format_volume(@volume_this_week)}</div>
-            <div class="stat-desc">kg total</div>
+            <div class="stat-value text-xl">{format_volume(@volume_this_week, @unit)}</div>
+            <div class="stat-desc">{@unit} total</div>
           </div>
           <div class="stat bg-base-200 rounded-box p-3">
             <div class="stat-title text-xs">Sets</div>
@@ -91,7 +92,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
               <li :for={pr <- @recent_prs} class="flex justify-between items-center text-sm">
                 <span>{pr.exercise.name}</span>
                 <span class="font-medium text-primary">
-                  {pr_label(pr.record_type)}: {format_pr_value(pr)}
+                  {pr_label(pr.record_type)}: {format_pr_value(pr, @unit)}
                 </span>
               </li>
             </ul>
@@ -107,9 +108,12 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    unit = Map.get(session, "unit", "kg")
+
     socket =
       socket
+      |> assign(:unit, unit)
       |> assign(:weekly_volume, Stats.weekly_volume())
       |> assign(:workouts_this_week, Stats.workouts_this_week())
       |> assign(:volume_this_week, Stats.volume_this_week())
@@ -122,12 +126,16 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
     {:ok, socket}
   end
 
-  defp format_volume(nil), do: "0"
+  defp format_volume(nil, _unit), do: "0"
 
-  defp format_volume(vol) when is_struct(vol, Decimal),
+  defp format_volume(vol, "kg") when is_struct(vol, Decimal),
     do: Decimal.round(vol, 1) |> Decimal.to_string()
 
-  defp format_volume(_), do: "0"
+  defp format_volume(vol, "lbs") when is_struct(vol, Decimal) do
+    vol |> Decimal.to_float() |> Units.kg_to_lbs() |> Float.round(1) |> to_string()
+  end
+
+  defp format_volume(_, _), do: "0"
 
   defp format_muscle(nil), do: "Other"
   defp format_muscle("full_body"), do: "Full Body"
@@ -140,11 +148,11 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
   defp pr_label("max_volume_session"), do: "Session vol"
   defp pr_label(t), do: t
 
-  defp format_pr_value(pr) do
+  defp format_pr_value(pr, unit) do
     if pr.record_type == "max_reps" do
       "#{Decimal.to_integer(pr.value)} reps"
     else
-      "#{Decimal.round(pr.value, 1)} kg"
+      Units.display_weight(pr.value, unit)
     end
   end
 end

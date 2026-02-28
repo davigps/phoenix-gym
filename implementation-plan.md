@@ -554,16 +554,16 @@ Testing tasks:
 **Goal**: User preferences.
 
 Tasks:
-- [ ] Profile LiveView:
+- [x] Profile LiveView:
   - Display name input
   - Unit toggle: kg / lbs (stored in session/ETS)
   - Theme toggle (light / dark / system)
-- [ ] Unit conversion applied globally: all weight inputs and displays convert based on preference
+- [x] Unit conversion applied globally: all weight inputs and displays convert based on preference
 
 Testing tasks:
-- [ ] Unit conversion pure-function tests: `kg_to_lbs/1` and `lbs_to_kg/1` round-trip within float tolerance; edge cases (0, very large values)
-- [ ] `ProfileLive.Index` LiveView test: unit toggle persists to session and re-mounts with the saved preference; switching to lbs re-renders a weight value using converted display
-- [ ] Cross-LiveView unit preference test: set preference to lbs in profile, navigate to active workout, verify weight inputs display lbs labels and previously stored kg values are converted correctly
+- [x] Unit conversion pure-function tests: `kg_to_lbs/1` and `lbs_to_kg/1` round-trip within float tolerance; edge cases (0, very large values)
+- [x] `ProfileLive.Index` LiveView test: unit toggle persists to session and re-mounts with the saved preference; switching to lbs re-renders a weight value using converted display
+- [x] Cross-LiveView unit preference test: set preference to lbs in profile, navigate to active workout, verify weight inputs display lbs labels and previously stored kg values are converted correctly
 
 ### Phase 8 — Polish & PWA
 

@@ -1,6 +1,8 @@
 defmodule PhoenixgymWeb.ProfileLive.Index do
   use PhoenixgymWeb, :live_view
 
+  alias Phoenixgym.Units
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -12,6 +14,29 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
         </div>
 
         <div class="p-4 space-y-6">
+          <%!-- Display Name --%>
+          <div class="card bg-base-200">
+            <div class="card-body p-4">
+              <h2 class="card-title text-base">Display Name</h2>
+              <form
+                id="profile-form"
+                action="/profile/update_preferences"
+                method="post"
+                class="space-y-2"
+              >
+                <input type="hidden" name="_csrf_token" value={Phoenix.Controller.get_csrf_token()} />
+                <input
+                  type="text"
+                  name="display_name"
+                  value={@display_name}
+                  placeholder="Your name"
+                  class="input input-bordered w-full"
+                />
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+              </form>
+            </div>
+          </div>
+
           <%!-- Theme --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">
@@ -30,22 +55,23 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
               <div class="flex items-center justify-between">
                 <span class="text-sm">Weight Unit</span>
                 <div class="join">
-                  <button
+                  <.link
+                    navigate={~p"/profile/set_unit?unit=kg"}
                     class={["btn btn-sm join-item", @unit == "kg" && "btn-primary"]}
-                    phx-click="set_unit"
-                    phx-value-unit="kg"
                   >
                     kg
-                  </button>
-                  <button
+                  </.link>
+                  <.link
+                    navigate={~p"/profile/set_unit?unit=lbs"}
                     class={["btn btn-sm join-item", @unit == "lbs" && "btn-primary"]}
-                    phx-click="set_unit"
-                    phx-value-unit="lbs"
                   >
                     lbs
-                  </button>
+                  </.link>
                 </div>
               </div>
+              <p class="text-xs text-base-content/60 mt-2">
+                Sample: {Units.display_weight(Decimal.new("100"), @unit)}
+              </p>
             </div>
           </div>
 
@@ -74,17 +100,14 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
   @impl true
   def mount(_params, session, socket) do
     unit = Map.get(session, "unit", "kg")
+    display_name = Map.get(session, "display_name", "")
 
     socket =
       socket
       |> assign(:unit, unit)
+      |> assign(:display_name, display_name)
       |> assign(:page_title, "Profile")
 
     {:ok, socket}
-  end
-
-  @impl true
-  def handle_event("set_unit", %{"unit" => unit}, socket) do
-    {:noreply, assign(socket, unit: unit)}
   end
 end

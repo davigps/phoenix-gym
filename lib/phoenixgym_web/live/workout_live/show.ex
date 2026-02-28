@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
 
   alias Phoenixgym.Workouts
   alias Phoenixgym.Records
+  alias Phoenixgym.Units
 
   @impl true
   def render(assigns) do
@@ -35,8 +36,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
             </div>
             <div class="stat bg-base-200 rounded-box p-3">
               <div class="stat-title text-xs">Volume</div>
-              <div class="stat-value text-lg">{format_volume(@workout.total_volume)}</div>
-              <div class="stat-desc">kg</div>
+              <div class="stat-value text-lg">{format_volume(@workout.total_volume, @unit)}</div>
+              <div class="stat-desc">{@unit}</div>
             </div>
             <div class="stat bg-base-200 rounded-box p-3">
               <div class="stat-title text-xs">Sets</div>
@@ -62,7 +63,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                     <tr>
                       <th>#</th>
                       <th>Type</th>
-                      <th>Weight (kg)</th>
+                      <th>Weight ({@unit})</th>
                       <th>Reps</th>
                       <th>RPE</th>
                       <th></th>
@@ -76,7 +77,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                           {String.upcase(String.at(set.set_type, 0))}
                         </span>
                       </td>
-                      <td>{if set.weight, do: Decimal.round(set.weight, 1), else: "—"}</td>
+                      <td>{if set.weight, do: Units.display_weight(set.weight, @unit), else: "—"}</td>
                       <td>{set.reps || "—"}</td>
                       <td>{if set.rpe, do: Decimal.round(set.rpe, 1), else: "—"}</td>
                       <td>
@@ -120,12 +121,14 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
   end
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"id" => id}, session, socket) do
+    unit = Map.get(session, "unit", "kg")
     workout = Workouts.get_workout!(id)
     pr_set_ids = Records.list_pr_set_ids_for_workout(workout.id) |> MapSet.new()
 
     socket =
       socket
+      |> assign(:unit, unit)
       |> assign(:workout, workout)
       |> assign(:page_title, workout.name || "Workout")
       |> assign(:pr_set_ids, pr_set_ids)
@@ -170,6 +173,12 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
     if h > 0, do: "#{h}h #{m}m", else: "#{m}m"
   end
 
-  defp format_volume(nil), do: "0"
-  defp format_volume(vol), do: Decimal.round(vol, 1) |> Decimal.to_string()
+  defp format_volume(nil, _unit), do: "0"
+  defp format_volume(vol, "kg"), do: Decimal.round(vol, 1) |> Decimal.to_string()
+
+  defp format_volume(vol, "lbs") do
+    vol |> Decimal.to_float() |> Units.kg_to_lbs() |> Float.round(1) |> to_string()
+  end
+
+  defp format_volume(_, _), do: "0"
 end

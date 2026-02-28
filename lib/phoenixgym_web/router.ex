@@ -38,6 +38,8 @@ defmodule PhoenixgymWeb.Router do
 
     # Profile
     live "/profile", ProfileLive.Index, :index
+    get "/profile/set_unit", ProfileController, :set_unit
+    post "/profile/update_preferences", ProfileController, :update_preferences
   end
 
   # Other scopes may use custom stacks.

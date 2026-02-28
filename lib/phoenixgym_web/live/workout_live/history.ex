@@ -2,6 +2,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
   use PhoenixgymWeb, :live_view
 
   alias Phoenixgym.Workouts
+  alias Phoenixgym.Units
 
   @page_size 20
 
@@ -54,7 +55,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
                   </span>
                   <span :if={workout.total_volume} class="flex items-center gap-1">
                     <.icon name="hero-bolt" class="h-4 w-4" />
-                    {format_volume(workout.total_volume)} kg
+                    {Units.display_weight(workout.total_volume, @unit)}
                   </span>
                   <span :if={workout.total_sets} class="flex items-center gap-1">
                     <.icon name="hero-squares-2x2" class="h-4 w-4" />
@@ -82,12 +83,14 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    unit = Map.get(session, "unit", "kg")
     workouts = Workouts.list_completed_workouts(limit: @page_size, offset: 0)
     has_more? = length(workouts) == @page_size
 
     socket =
       socket
+      |> assign(:unit, unit)
       |> assign(:page_title, "History")
       |> assign(:workouts_empty?, workouts == [])
       |> assign(:offset, length(workouts))
@@ -125,7 +128,4 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
     m = div(rem(seconds, 3600), 60)
     if h > 0, do: "#{h}h #{m}m", else: "#{m}m"
   end
-
-  defp format_volume(nil), do: "0"
-  defp format_volume(vol), do: Decimal.round(vol, 1) |> Decimal.to_string()
 end

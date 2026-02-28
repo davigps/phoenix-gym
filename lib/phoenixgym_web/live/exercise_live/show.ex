@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
 
   alias Phoenixgym.Exercises
   alias Phoenixgym.Records
+  alias Phoenixgym.Units
 
   @impl true
   def render(assigns) do
@@ -46,7 +47,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
                 class="flex justify-between items-center p-2 bg-base-200 rounded-lg"
               >
                 <span class="text-sm">{pr_label(type)}</span>
-                <span class="font-bold">{format_pr(record)}</span>
+                <span class="font-bold">{format_pr(record, @unit)}</span>
               </div>
             </div>
           </div>
@@ -57,12 +58,14 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
   end
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"id" => id}, session, socket) do
+    unit = Map.get(session, "unit", "kg")
     exercise = Exercises.get_exercise!(id)
     records = Records.get_best_records(exercise.id)
 
     socket =
       socket
+      |> assign(:unit, unit)
       |> assign(:exercise, exercise)
       |> assign(:records, records)
       |> assign(:page_title, exercise.name)
@@ -77,6 +80,6 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
   defp pr_label("max_volume_session"), do: "Max Session Volume"
   defp pr_label(t), do: t
 
-  defp format_pr(%{record_type: "max_reps", value: v}), do: "#{Decimal.to_integer(v)} reps"
-  defp format_pr(%{value: v}), do: "#{Decimal.round(v, 1)} kg"
+  defp format_pr(%{record_type: "max_reps", value: v}, _unit), do: "#{Decimal.to_integer(v)} reps"
+  defp format_pr(%{value: v}, unit), do: Units.display_weight(v, unit)
 end

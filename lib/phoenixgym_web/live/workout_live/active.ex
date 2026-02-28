@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
   alias Phoenixgym.Workouts
   alias Phoenixgym.Exercises
+  alias Phoenixgym.Units
 
   @rest_timer_default 90
 
@@ -108,7 +109,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               >
                 <span class="font-medium">Last:</span>
                 <span :for={s <- item.previous_sets}>
-                  {if s.weight, do: "#{Decimal.round(s.weight, 1)}kg", else: "—"}×{s.reps || "—"}
+                  {Units.display_weight(s.weight, @unit)}×{s.reps || "—"}
                 </span>
               </div>
 
@@ -119,7 +120,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                     <tr>
                       <th class="w-8">#</th>
                       <th class="w-16">Type</th>
-                      <th>kg</th>
+                      <th>{@unit}</th>
                       <th>Reps</th>
                       <th class="w-8">✓</th>
                       <th class="w-8"></th>
@@ -148,7 +149,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                           type="number"
                           min="0"
                           step="0.5"
-                          value={if set.weight, do: Decimal.to_string(set.weight), else: ""}
+                          value={Units.kg_for_display(set.weight, @unit)}
                           phx-blur="update_set"
                           phx-value-id={set.id}
                           phx-value-field="weight"
@@ -291,7 +292,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   end
 
   @impl true
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
+    unit = Map.get(session, "unit", "kg")
     workout = Workouts.get_in_progress_workout()
 
     socket =
@@ -306,6 +308,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
     socket =
       socket
+      |> assign(:unit, unit)
       |> assign(:show_picker, false)
       |> assign(:show_discard_modal, false)
       |> assign(:rest_timer, nil)
@@ -458,7 +461,16 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   @impl true
   def handle_event("update_set", %{"id" => set_id, "field" => field, "value" => value}, socket) do
     set = Workouts.get_workout_set!(String.to_integer(set_id))
-    Workouts.update_workout_set(set, %{field => value})
+
+    attrs =
+      if field == "weight" && socket.assigns.unit do
+        kg = Units.parse_to_kg(value, socket.assigns.unit)
+        %{field => if(kg, do: Decimal.from_float(kg), else: nil)}
+      else
+        %{field => value}
+      end
+
+    Workouts.update_workout_set(set, attrs)
     workout = Workouts.get_workout!(socket.assigns.workout.id)
     {:noreply, load_workout_state(socket, workout)}
   end
