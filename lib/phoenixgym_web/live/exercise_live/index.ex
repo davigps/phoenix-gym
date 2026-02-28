@@ -56,6 +56,25 @@ defmodule PhoenixgymWeb.ExerciseLive.Index do
               {String.capitalize(muscle)}
             </button>
           </div>
+
+          <%!-- Equipment filter chips --%>
+          <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <button
+              class={["btn btn-xs btn-ghost", @equipment_filter == "" && "btn-active"]}
+              phx-click="filter_equipment"
+              phx-value-equipment=""
+            >
+              Any equipment
+            </button>
+            <button
+              :for={eq <- Exercise.equipment_types()}
+              class={["btn btn-xs btn-ghost", @equipment_filter == eq && "btn-active"]}
+              phx-click="filter_equipment"
+              phx-value-equipment={eq}
+            >
+              {String.capitalize(eq)}
+            </button>
+          </div>
         </div>
 
         <%!-- Exercise List --%>
@@ -96,6 +115,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Index do
       |> assign(:exercises, exercises)
       |> assign(:search, "")
       |> assign(:muscle_filter, "")
+      |> assign(:equipment_filter, "")
       |> assign(:page_title, "Exercises")
 
     {:ok, socket}
@@ -106,7 +126,8 @@ defmodule PhoenixgymWeb.ExerciseLive.Index do
     exercises =
       Exercises.list_exercises(
         search: search,
-        primary_muscle: socket.assigns.muscle_filter
+        primary_muscle: socket.assigns.muscle_filter,
+        equipment: socket.assigns.equipment_filter
       )
 
     {:noreply, assign(socket, exercises: exercises, search: search)}
@@ -117,9 +138,22 @@ defmodule PhoenixgymWeb.ExerciseLive.Index do
     exercises =
       Exercises.list_exercises(
         search: socket.assigns.search,
-        primary_muscle: muscle
+        primary_muscle: muscle,
+        equipment: socket.assigns.equipment_filter
       )
 
     {:noreply, assign(socket, exercises: exercises, muscle_filter: muscle)}
+  end
+
+  @impl true
+  def handle_event("filter_equipment", %{"equipment" => equipment}, socket) do
+    exercises =
+      Exercises.list_exercises(
+        search: socket.assigns.search,
+        primary_muscle: socket.assigns.muscle_filter,
+        equipment: equipment
+      )
+
+    {:noreply, assign(socket, exercises: exercises, equipment_filter: equipment)}
   end
 end

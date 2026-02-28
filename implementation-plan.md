@@ -447,17 +447,17 @@ Testing tasks:
 **Goal**: Browse, search, filter, and create custom exercises.
 
 Tasks:
-- [ ] Exercise list LiveView with search (by name) and filter (muscle, equipment, category) using `phx-change` on form
-- [ ] Exercise detail modal/page showing PR history for that exercise
-- [ ] "Add Custom Exercise" form LiveView
-- [ ] Exercise picker component (reused in routine builder and active workout)
-- [ ] Muscle group and equipment badge components
+- [x] Exercise list LiveView with search (by name) and filter (muscle, equipment, category) using `phx-change` on form
+- [x] Exercise detail modal/page showing PR history for that exercise
+- [x] "Add Custom Exercise" form LiveView
+- [x] Exercise picker component (reused in routine builder and active workout)
+- [x] Muscle group and equipment badge components
 
 Testing tasks:
-- [ ] `Exercises` context: `search_exercises/1` returns correct subset for name query; `filter_exercises/1` correctly narrows by muscle, equipment, and category independently and combined; empty query returns all exercises
-- [ ] `ExerciseLive.Index` LiveView test: page mounts, typing in search box filters the list (`phx-change`), selecting a muscle chip further narrows results, list resets when filters cleared
-- [ ] `ExerciseLive.New` LiveView test: valid form submission creates exercise and flashes success; missing required fields shows inline errors; duplicate name shows error
-- [ ] `ExerciseLive.Show` LiveView test: exercise details rendered, PR section shows "no records yet" when empty
+- [x] `Exercises` context: `search_exercises/1` returns correct subset for name query; `filter_exercises/1` correctly narrows by muscle, equipment, and category independently and combined; empty query returns all exercises
+- [x] `ExerciseLive.Index` LiveView test: page mounts, typing in search box filters the list (`phx-change`), selecting a muscle chip further narrows results, list resets when filters cleared
+- [x] `ExerciseLive.New` LiveView test: valid form submission creates exercise and flashes success; missing required fields shows inline errors; duplicate name shows error
+- [x] `ExerciseLive.Show` LiveView test: exercise details rendered, PR section shows "no records yet" when empty
 
 ### Phase 3 — Routine Builder
 

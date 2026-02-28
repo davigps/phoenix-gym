@@ -345,6 +345,99 @@ defmodule PhoenixgymWeb.GymComponents do
     """
   end
 
+  # ── Exercise Picker Modal ────────────────────────────────────────────────
+
+  @doc """
+  A searchable exercise picker modal. Fires a `select_exercise` phx-click event
+  with `phx-value-id` set to the exercise id. The parent LiveView must handle
+  the `select_exercise` event and toggle `show` back to false.
+
+  ## Attributes
+
+  * `show` - boolean, whether the modal is visible
+  * `exercises` - list of Exercise structs to display
+  * `search` - current search string (controlled by parent)
+  * `on_cancel` - JS command or event name to close the picker
+  """
+
+  attr :show, :boolean, default: false
+  attr :exercises, :list, required: true
+  attr :search, :string, default: ""
+  attr :on_cancel, :string, default: "close_exercise_picker"
+  attr :select_event, :string, default: "select_exercise"
+
+  def exercise_picker(assigns) do
+    ~H"""
+    <div
+      :if={@show}
+      class="fixed inset-0 z-50 flex flex-col bg-base-100"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Select Exercise"
+    >
+      <%!-- Picker header --%>
+      <div class="navbar bg-base-100 border-b border-base-300 min-h-14 px-2">
+        <div class="navbar-start">
+          <button
+            class="btn btn-ghost btn-sm"
+            phx-click={@on_cancel}
+            aria-label="Cancel"
+          >
+            <.icon name="hero-x-mark" class="h-5 w-5" />
+          </button>
+        </div>
+        <div class="navbar-center">
+          <span class="font-semibold">Select Exercise</span>
+        </div>
+      </div>
+
+      <%!-- Search --%>
+      <div class="p-3 border-b border-base-300">
+        <form phx-change="picker_search" phx-submit="picker_search">
+          <label class="input input-bordered flex items-center gap-2 w-full">
+            <.icon name="hero-magnifying-glass" class="h-4 w-4 opacity-50" />
+            <input
+              type="text"
+              name="search"
+              value={@search}
+              placeholder="Search exercises..."
+              class="grow"
+              phx-debounce="200"
+              autofocus
+            />
+          </label>
+        </form>
+      </div>
+
+      <%!-- Exercise list --%>
+      <div class="flex-1 overflow-y-auto divide-y divide-base-200">
+        <div :if={@exercises == []} class="p-8 text-center text-base-content/50">
+          No exercises found
+        </div>
+        <button
+          :for={exercise <- @exercises}
+          class="flex items-center gap-3 p-3 w-full text-left hover:bg-base-200 transition-colors"
+          phx-click={@select_event}
+          phx-value-id={exercise.id}
+        >
+          <div class="flex-1 min-w-0">
+            <p class="font-medium truncate">{exercise.name}</p>
+            <div class="flex gap-1 mt-0.5">
+              <span class="badge badge-sm badge-ghost">
+                {String.capitalize(exercise.primary_muscle || "")}
+              </span>
+              <span class="badge badge-sm badge-outline">
+                {exercise.equipment}
+              </span>
+            </div>
+          </div>
+          <.icon name="hero-plus" class="h-4 w-4 text-base-content/40 shrink-0" />
+        </button>
+      </div>
+    </div>
+    """
+  end
+
   # ── Helpers ─────────────────────────────────────────────────────────────
 
   defp format_datetime(nil), do: ""
