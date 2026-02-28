@@ -17,7 +17,27 @@ defmodule PhoenixgymWeb.Router do
   scope "/", PhoenixgymWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # Dashboard
+    live "/", DashboardLive.Index, :index
+
+    # Exercises
+    live "/exercises", ExerciseLive.Index, :index
+    live "/exercises/new", ExerciseLive.New, :new
+    live "/exercises/:id", ExerciseLive.Show, :show
+
+    # Routines
+    live "/routines", RoutineLive.Index, :index
+    live "/routines/new", RoutineLive.Index, :new
+    live "/routines/:id", RoutineLive.Show, :show
+    live "/routines/:id/edit", RoutineLive.Edit, :edit
+
+    # Workouts
+    live "/workout/active", WorkoutLive.Active, :index
+    live "/workout/history", WorkoutLive.History, :index
+    live "/workout/:id", WorkoutLive.Show, :show
+
+    # Profile
+    live "/profile", ProfileLive.Index, :index
   end
 
   # Other scopes may use custom stacks.

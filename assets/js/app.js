@@ -25,11 +25,32 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/phoenixgym"
 import topbar from "../vendor/topbar"
 
+// WorkoutTimer hook: updates elapsed time display every second
+const WorkoutTimer = {
+  mounted() {
+    const startedAt = parseInt(this.el.dataset.startedAt, 10) * 1000
+    this.timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000)
+      const h = Math.floor(elapsed / 3600)
+      const m = Math.floor((elapsed % 3600) / 60)
+      const s = elapsed % 60
+      this.el.textContent = [h, m, s]
+        .map(v => String(v).padStart(2, "0"))
+        .join(":")
+    }, 1000)
+  },
+  destroyed() {
+    clearInterval(this.timer)
+  }
+}
+
+const Hooks = {...colocatedHooks, WorkoutTimer}
+
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: Hooks,
 })
 
 // Show progress bar on live navigation and form submits

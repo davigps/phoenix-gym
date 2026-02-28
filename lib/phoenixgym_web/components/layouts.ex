@@ -4,6 +4,7 @@ defmodule PhoenixgymWeb.Layouts do
   used by your application.
   """
   use PhoenixgymWeb, :html
+  import PhoenixgymWeb.GymComponents, only: [bottom_nav: 1]
 
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
@@ -12,20 +13,17 @@ defmodule PhoenixgymWeb.Layouts do
   embed_templates "layouts/*"
 
   @doc """
-  Renders your app layout.
-
-  This function is typically invoked from every template,
-  and it often contains your application menu, sidebar,
-  or similar.
+  Renders the gym app layout with bottom tab navigation.
 
   ## Examples
 
-      <Layouts.app flash={@flash}>
+      <Layouts.app flash={@flash} active_tab={:dashboard}>
         <h1>Content</h1>
       </Layouts.app>
 
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
+  attr :active_tab, :atom, default: :dashboard, doc: "active bottom nav tab"
 
   attr :current_scope, :map,
     default: nil,
@@ -35,38 +33,12 @@ defmodule PhoenixgymWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
-        </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <li>
-            <a href="https://hexdocs.pm/phoenix/overview.html" class="btn btn-primary">
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </header>
-
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
+    <div class="h-dvh flex flex-col max-w-lg mx-auto">
+      <main class="flex-1 overflow-y-auto pb-16">
         {render_slot(@inner_block)}
-      </div>
-    </main>
+      </main>
+      <.bottom_nav active={@active_tab} />
+    </div>
 
     <.flash_group flash={@flash} />
     """
