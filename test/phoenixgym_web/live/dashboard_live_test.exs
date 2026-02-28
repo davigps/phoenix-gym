@@ -10,9 +10,9 @@ defmodule PhoenixgymWeb.DashboardLiveTest do
 
       assert has_element?(view, "#volume-chart")
       # This week stats section
-      assert has_element?(view, "div.stat", "Workouts")
+      assert has_element?(view, "div.stat", "Treinos")
       assert has_element?(view, "div.stat", "Volume")
-      assert has_element?(view, "div.stat", "Sets")
+      assert has_element?(view, "div.stat", "Séries")
     end
 
     test "quick-start section lists Start Empty Workout and recent routines", %{conn: conn} do
@@ -21,8 +21,8 @@ defmodule PhoenixgymWeb.DashboardLiveTest do
 
       {:ok, _view, html} = live(conn, "/")
 
-      assert html =~ "Quick Start"
-      assert html =~ "Start Empty Workout"
+      assert html =~ "Início rápido"
+      assert html =~ "Iniciar treino vazio"
       assert html =~ "Push Day"
       assert html =~ "Pull Day"
     end
@@ -41,20 +41,20 @@ defmodule PhoenixgymWeb.DashboardLiveTest do
 
     test "shows empty state when no workouts this week", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/")
-      assert html =~ "Start your first workout"
+      assert html =~ "Faça seu primeiro treino para ver as estatísticas aqui!"
     end
 
     test "shows streak when user has completed workouts", %{conn: conn} do
       completed_workout_fixture()
       {:ok, _view, html} = live(conn, "/")
-      assert html =~ "day streak" or html =~ "streak"
+      assert html =~ "sequência de" or html =~ "dia"
     end
 
     test "shows recent PRs when present", %{conn: conn} do
       completed_workout_fixture()
       {:ok, _view, html} = live(conn, "/")
       # Recent PRs section may appear if we have PRs
-      assert html =~ "Recent PRs" or html =~ "Quick Start"
+      assert html =~ "PRs recentes" or html =~ "Início rápido"
     end
   end
 end

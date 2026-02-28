@@ -12,8 +12,8 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
     test "shows empty state CTA when no routines exist", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/routines")
 
-      assert html =~ "No routines yet"
-      assert html =~ "New Routine"
+      assert html =~ "Nenhuma rotina ainda"
+      assert html =~ "Nova rotina"
     end
 
     test "lists routines as cards with their names", %{conn: conn} do
@@ -33,7 +33,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       {:ok, _view, html} = live(conn, "/routines")
 
-      assert html =~ "2 exercises"
+      assert html =~ "2 exercícios"
     end
 
     test "shows 0 exercises for an empty routine", %{conn: conn} do
@@ -41,7 +41,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       {:ok, _view, html} = live(conn, "/routines")
 
-      assert html =~ "0 exercises"
+      assert html =~ "0 exercícios"
     end
 
     test "links to /routines/new for creating routines", %{conn: conn} do
@@ -53,7 +53,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
     test "inline new routine form shown when live_action is :new", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/routines/new")
 
-      assert html =~ "New Routine"
+      assert html =~ "Nova rotina"
     end
 
     test "creating a routine redirects to its edit page", %{conn: conn} do
@@ -77,7 +77,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
         |> form("form[phx-submit='create']", %{"routine" => %{"name" => ""}})
         |> render_submit()
 
-      assert html =~ "can&#39;t be blank"
+      assert html =~ "não pode ficar em branco" or html =~ "em branco"
     end
   end
 
@@ -104,7 +104,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       {:ok, _view, html} = live(conn, "/routines/#{routine.id}")
 
-      assert html =~ "2 Exercises"
+      assert html =~ "2 exercícios"
     end
 
     test "shows routine notes when present", %{conn: conn} do
@@ -127,7 +127,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       {:ok, _view, html} = live(conn, "/routines/#{routine.id}")
 
-      assert html =~ "4 sets"
+      assert html =~ "4 séries"
     end
 
     test "edit button links to edit page", %{conn: conn} do
@@ -158,7 +158,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
       assert path =~ ~r|/routines/\d+/edit|
 
       routines = Routines.list_routines()
-      assert Enum.any?(routines, &String.contains?(&1.name, "Copy"))
+      assert Enum.any?(routines, &String.contains?(&1.name, "Cópia"))
     end
 
     test "confirm_delete event removes routine and redirects to list", %{conn: conn} do
@@ -178,7 +178,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
       {:ok, _view, html} = live(conn, "/routines/#{routine.id}")
 
       assert html =~ "confirm_delete"
-      assert html =~ "Delete"
+      assert html =~ "Excluir"
     end
   end
 
@@ -194,7 +194,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       {:ok, _view, html} = live(conn, "/routines/#{routine.id}/edit")
 
-      assert html =~ "Edit Routine"
+      assert html =~ "Editar rotina"
       assert html =~ "EditMeRoutine"
       assert html =~ "Edit notes here"
     end
@@ -299,7 +299,7 @@ defmodule PhoenixgymWeb.RoutineLiveTest do
 
       html = view |> element("button[phx-click='save']") |> render_click()
 
-      assert html =~ "can&#39;t be blank"
+      assert html =~ "não pode ficar em branco" or html =~ "em branco"
     end
 
     test "picker search filters exercises by name", %{conn: conn} do

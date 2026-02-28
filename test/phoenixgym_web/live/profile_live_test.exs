@@ -10,8 +10,8 @@ defmodule PhoenixgymWeb.ProfileLiveTest do
     test "mounts with default unit kg when session has no unit", %{conn: conn} do
       {:ok, view, html} = live(conn, "/profile")
 
-      assert html =~ "Profile"
-      assert html =~ "Units"
+      assert html =~ "Perfil"
+      assert html =~ "Unidades"
       assert has_element?(view, "a[href*='set_unit'][href*='unit=kg']")
     end
 

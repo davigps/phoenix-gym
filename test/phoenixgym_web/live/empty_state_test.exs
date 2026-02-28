@@ -11,8 +11,8 @@ defmodule PhoenixgymWeb.EmptyStateTest do
     test "history page with no workouts renders 'No workouts yet' CTA", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/workout/history")
 
-      assert html =~ "No workouts yet"
-      assert html =~ "Start Workout"
+      assert html =~ "Nenhum treino ainda"
+      assert html =~ "Iniciar treino"
       assert html =~ "/workout/active"
     end
 
@@ -26,7 +26,7 @@ defmodule PhoenixgymWeb.EmptyStateTest do
         |> element("form[phx-change='search']")
         |> render_change(%{"search" => "ZZZNoMatch999XXX"})
 
-      assert html =~ "No exercises found"
+      assert html =~ "Nenhum exercício encontrado"
     end
   end
 end

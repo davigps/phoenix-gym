@@ -13,7 +13,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
       <div class="flex flex-col">
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
-          <span class="font-semibold text-lg">History</span>
+          <span class="font-semibold text-lg">{gettext("History")}</span>
         </div>
 
         <div class="p-4 space-y-3">
@@ -22,12 +22,12 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
             class="flex flex-col items-center justify-center py-16 text-center"
           >
             <.icon name="hero-clock" class="h-12 w-12 text-base-content/30 mb-4" />
-            <h3 class="font-semibold text-lg">No workouts yet</h3>
+            <h3 class="font-semibold text-lg">{gettext("No workouts yet")}</h3>
             <p class="text-base-content/60 text-sm mt-1">
-              Complete your first workout to see it here
+              {gettext("Complete your first workout to see it here")}
             </p>
             <a href="/workout/active" class="btn btn-primary mt-4">
-              <.icon name="hero-play" class="h-4 w-4" /> Start Workout
+              <.icon name="hero-play" class="h-4 w-4" /> {gettext("Start Workout")}
             </a>
           </div>
 
@@ -41,7 +41,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
               <div class="card-body p-4">
                 <div class="flex justify-between items-start">
                   <div>
-                    <h3 class="font-semibold">{workout.name || "Workout"}</h3>
+                    <h3 class="font-semibold">{workout.name || gettext("Workout")}</h3>
                     <p class="text-sm text-base-content/60">
                       {format_datetime(workout.started_at)}
                     </p>
@@ -59,7 +59,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
                   </span>
                   <span :if={workout.total_sets} class="flex items-center gap-1">
                     <.icon name="hero-squares-2x2" class="h-4 w-4" />
-                    {workout.total_sets} sets
+                    {gettext("%{count} sets", count: workout.total_sets)}
                   </span>
                 </div>
               </div>
@@ -74,7 +74,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
               phx-click-loading
               class="btn btn-outline btn-sm"
             >
-              Load More
+              {gettext("Load More")}
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
     socket =
       socket
       |> assign(:unit, unit)
-      |> assign(:page_title, "History")
+      |> assign(:page_title, gettext("History"))
       |> assign(:workouts_empty?, workouts == [])
       |> assign(:offset, length(workouts))
       |> assign(:has_more?, has_more?)

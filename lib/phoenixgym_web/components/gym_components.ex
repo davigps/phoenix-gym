@@ -15,16 +15,26 @@ defmodule PhoenixgymWeb.GymComponents do
 
   def bottom_nav(assigns) do
     tabs = [
-      %{id: :dashboard, href: "/", icon: "hero-home-solid", label: "Home"},
+      %{id: :dashboard, href: "/", icon: "hero-home-solid", label: gettext("Home")},
       %{
         id: :routines,
         href: "/routines",
         icon: "hero-clipboard-document-list-solid",
-        label: "Routines"
+        label: gettext("Routines")
       },
-      %{id: :workout, href: "/workout/active", icon: "hero-play-solid", label: "Workout"},
-      %{id: :history, href: "/workout/history", icon: "hero-clock-solid", label: "History"},
-      %{id: :profile, href: "/profile", icon: "hero-user-circle-solid", label: "Profile"}
+      %{
+        id: :workout,
+        href: "/workout/active",
+        icon: "hero-play-solid",
+        label: gettext("Workout")
+      },
+      %{
+        id: :history,
+        href: "/workout/history",
+        icon: "hero-clock-solid",
+        label: gettext("History")
+      },
+      %{id: :profile, href: "/profile", icon: "hero-user-circle-solid", label: gettext("Profile")}
     ]
 
     assigns = assign(assigns, :tabs, tabs)
@@ -102,8 +112,19 @@ defmodule PhoenixgymWeb.GymComponents do
   defp muscle_color("cardio"), do: "badge-ghost"
   defp muscle_color(_), do: "badge-ghost"
 
-  defp muscle_label("full_body"), do: "Full Body"
-  defp muscle_label(m), do: String.capitalize(m)
+  def muscle_label("full_body"), do: gettext("Full Body")
+  def muscle_label("chest"), do: gettext("Chest")
+  def muscle_label("back"), do: gettext("Back")
+  def muscle_label("shoulders"), do: gettext("Shoulders")
+  def muscle_label("biceps"), do: gettext("Biceps")
+  def muscle_label("triceps"), do: gettext("Triceps")
+  def muscle_label("legs"), do: gettext("Legs")
+  def muscle_label("glutes"), do: gettext("Glutes")
+  def muscle_label("core"), do: gettext("Core")
+  def muscle_label("calves"), do: gettext("Calves")
+  def muscle_label("forearms"), do: gettext("Forearms")
+  def muscle_label("cardio"), do: gettext("Cardio")
+  def muscle_label(m), do: String.capitalize(m)
 
   # ── Exercise Row ────────────────────────────────────────────────────────
 
@@ -160,7 +181,7 @@ defmodule PhoenixgymWeb.GymComponents do
       <div class="card-body p-4">
         <div class="flex justify-between items-start">
           <div>
-            <h3 class="card-title text-base">{@workout.name || "Workout"}</h3>
+            <h3 class="card-title text-base">{@workout.name || gettext("Workout")}</h3>
             <p class="text-sm text-base-content/60">
               {format_datetime(@workout.started_at)}
             </p>
@@ -178,7 +199,7 @@ defmodule PhoenixgymWeb.GymComponents do
           </span>
           <span :if={@workout.total_sets} class="flex items-center gap-1">
             <.icon name="hero-squares-2x2" class="h-4 w-4" />
-            {@workout.total_sets} sets
+            {gettext("%{count} sets", count: @workout.total_sets)}
           </span>
         </div>
       </div>
@@ -198,7 +219,7 @@ defmodule PhoenixgymWeb.GymComponents do
           <div>
             <h3 class="card-title text-base">{@routine.name}</h3>
             <p class="text-sm text-base-content/60">
-              {length(@routine.routine_exercises)} exercises
+              {gettext("%{count} exercises", count: length(@routine.routine_exercises))}
             </p>
           </div>
           <.icon name="hero-chevron-right" class="h-5 w-5 text-base-content/40" />
@@ -226,15 +247,15 @@ defmodule PhoenixgymWeb.GymComponents do
     """
   end
 
-  defp pr_label("max_weight"), do: "Max Weight"
-  defp pr_label("max_reps"), do: "Max Reps"
-  defp pr_label("estimated_1rm"), do: "Est. 1RM"
-  defp pr_label("max_volume_set"), do: "Max Set Volume"
-  defp pr_label("max_volume_session"), do: "Max Session Volume"
+  defp pr_label("max_weight"), do: gettext("Max Weight")
+  defp pr_label("max_reps"), do: gettext("Max Reps")
+  defp pr_label("estimated_1rm"), do: gettext("Est. 1RM")
+  defp pr_label("max_volume_set"), do: gettext("Max Set Volume")
+  defp pr_label("max_volume_session"), do: gettext("Max Session Volume")
   defp pr_label(type), do: type
 
   defp format_pr_value(%{record_type: "max_reps", value: v}, _unit),
-    do: "#{Decimal.to_integer(v)} reps"
+    do: gettext("%{count} reps", count: Decimal.to_integer(v))
 
   defp format_pr_value(%{value: v}, unit), do: Units.display_weight(v, unit)
 
@@ -244,10 +265,13 @@ defmodule PhoenixgymWeb.GymComponents do
   attr :title, :string, required: true
   attr :message, :string, required: true
   attr :confirm_event, :string, required: true
-  attr :confirm_label, :string, default: "Confirm"
+  attr :confirm_label, :string, default: nil
   attr :confirm_class, :string, default: "btn-error"
 
   def confirm_modal(assigns) do
+    confirm_label = assigns[:confirm_label] || gettext("Confirm")
+    assigns = assign(assigns, :confirm_label, confirm_label)
+
     ~H"""
     <dialog id={@id} class="modal modal-bottom sm:modal-middle">
       <div class="modal-box">
@@ -255,7 +279,7 @@ defmodule PhoenixgymWeb.GymComponents do
         <p class="py-4">{@message}</p>
         <div class="modal-action">
           <form method="dialog">
-            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-ghost">{gettext("Cancel")}</button>
           </form>
           <button class={["btn", @confirm_class]} phx-click={@confirm_event}>
             {@confirm_label}
@@ -263,7 +287,7 @@ defmodule PhoenixgymWeb.GymComponents do
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">
-        <button>close</button>
+        <button>{gettext("close")}</button>
       </form>
     </dialog>
     """
@@ -278,9 +302,9 @@ defmodule PhoenixgymWeb.GymComponents do
     ~H"""
     <div class="bg-base-200 px-4 py-2">
       <div class="flex items-center justify-between mb-1">
-        <span class="text-sm font-medium">Rest</span>
+        <span class="text-sm font-medium">{gettext("Rest")}</span>
         <span class="font-mono font-bold">{format_rest_time(@seconds_remaining)}</span>
-        <button class="btn btn-xs btn-ghost" phx-click="skip_rest">Skip</button>
+        <button class="btn btn-xs btn-ghost" phx-click="skip_rest">{gettext("Skip")}</button>
       </div>
       <progress
         class="progress progress-primary w-full"
@@ -305,7 +329,7 @@ defmodule PhoenixgymWeb.GymComponents do
   def previous_sets(assigns) do
     ~H"""
     <div :if={@sets != []} class="text-xs text-base-content/50 px-1 mb-1">
-      <span class="font-medium">Last: </span>
+      <span class="font-medium">{gettext("Last: ")}</span>
       <span>
         {Enum.map_join(@sets, "  ", fn s ->
           weight = if s.weight, do: "#{Decimal.round(s.weight, 1)}kg", else: "—"
@@ -387,7 +411,7 @@ defmodule PhoenixgymWeb.GymComponents do
       class="fixed inset-0 z-50 flex flex-col bg-base-100"
       role="dialog"
       aria-modal="true"
-      aria-label="Select Exercise"
+      aria-label={gettext("Select Exercise")}
     >
       <%!-- Picker header --%>
       <div class="navbar bg-base-100 border-b border-base-300 min-h-14 px-2">
@@ -395,13 +419,13 @@ defmodule PhoenixgymWeb.GymComponents do
           <button
             class="btn btn-ghost btn-sm"
             phx-click={@on_cancel}
-            aria-label="Cancel"
+            aria-label={gettext("Cancel")}
           >
             <.icon name="hero-x-mark" class="h-5 w-5" />
           </button>
         </div>
         <div class="navbar-center">
-          <span class="font-semibold">Select Exercise</span>
+          <span class="font-semibold">{gettext("Select Exercise")}</span>
         </div>
       </div>
 
@@ -414,7 +438,7 @@ defmodule PhoenixgymWeb.GymComponents do
               type="text"
               name="search"
               value={@search}
-              placeholder="Search exercises..."
+              placeholder={gettext("Search exercises...")}
               class="grow"
               phx-debounce="200"
               autofocus
@@ -426,7 +450,7 @@ defmodule PhoenixgymWeb.GymComponents do
       <%!-- Exercise list --%>
       <div class="flex-1 overflow-y-auto divide-y divide-base-200">
         <div :if={@exercises == []} class="p-8 text-center text-base-content/50">
-          No exercises found
+          {gettext("No exercises found")}
         </div>
         <button
           :for={exercise <- @exercises}

@@ -33,6 +33,8 @@ defmodule PhoenixgymWeb.ConnCase do
 
   setup tags do
     Phoenixgym.DataCase.setup_sandbox(tags)
+    # Ensure Gettext locale is Portuguese so LiveView and form errors render in PT
+    Gettext.put_locale(PhoenixgymWeb.Gettext, "pt")
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

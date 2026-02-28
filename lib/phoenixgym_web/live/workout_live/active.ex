@@ -32,7 +32,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             </div>
             <div class="navbar-end">
               <button phx-click="finish" class="btn btn-primary btn-sm">
-                Finish
+                {gettext("Finish")}
               </button>
             </div>
           </div>
@@ -43,7 +43,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               <.icon name="hero-clock" class="h-4 w-4 text-primary shrink-0" />
               <div class="flex-1">
                 <div class="flex justify-between text-xs mb-1">
-                  <span class="font-medium">Rest</span>
+                  <span class="font-medium">{gettext("Rest")}</span>
                   <span class="font-mono">{format_rest(@rest_timer.remaining)}s</span>
                 </div>
                 <progress
@@ -54,7 +54,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                 </progress>
               </div>
               <button phx-click="skip_rest_timer" class="btn btn-ghost btn-xs">
-                Skip
+                {gettext("Skip")}
               </button>
             </div>
           </div>
@@ -63,7 +63,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
           <div class="px-4 pt-3">
             <input
               type="text"
-              placeholder="Workout notes..."
+              placeholder={gettext("Workout notes...")}
               value={@workout.notes}
               phx-blur="update_notes"
               name="notes"
@@ -86,7 +86,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                     phx-click="move_exercise_up"
                     phx-value-id={item.workout_exercise.id}
                     class="btn btn-ghost btn-xs"
-                    aria-label="Move up"
+                    aria-label={gettext("Move up")}
                   >
                     <.icon name="hero-chevron-up" class="h-3 w-3" />
                   </button>
@@ -95,7 +95,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                     phx-click="move_exercise_down"
                     phx-value-id={item.workout_exercise.id}
                     class="btn btn-ghost btn-xs"
-                    aria-label="Move down"
+                    aria-label={gettext("Move down")}
                   >
                     <.icon name="hero-chevron-down" class="h-3 w-3" />
                   </button>
@@ -107,7 +107,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                 :if={item.previous_sets != []}
                 class="text-xs text-base-content/50 flex gap-2 flex-wrap"
               >
-                <span class="font-medium">Last:</span>
+                <span class="font-medium">{gettext("Last:")}</span>
                 <span :for={s <- item.previous_sets}>
                   {Units.display_weight(s.weight, @unit)}×{s.reps || "—"}
                 </span>
@@ -119,9 +119,9 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                   <thead>
                     <tr>
                       <th class="w-8">#</th>
-                      <th class="w-16">Type</th>
+                      <th class="w-16">{gettext("Type")}</th>
                       <th>{@unit}</th>
-                      <th>Reps</th>
+                      <th>{gettext("Reps")}</th>
                       <th class="w-8">✓</th>
                       <th class="w-8"></th>
                     </tr>
@@ -185,7 +185,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                           phx-click="remove_set"
                           phx-value-id={set.id}
                           class="btn btn-ghost btn-xs text-error"
-                          aria-label="Remove set"
+                          aria-label={gettext("Remove set")}
                         >
                           <.icon name="hero-x-mark" class="h-3 w-3" />
                         </button>
@@ -200,13 +200,13 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                 phx-value-workout-exercise-id={item.workout_exercise.id}
                 class="btn btn-ghost btn-xs w-full gap-1"
               >
-                <.icon name="hero-plus" class="h-3 w-3" /> Add Set
+                <.icon name="hero-plus" class="h-3 w-3" /> {gettext("Add Set")}
               </button>
             </div>
 
             <%!-- Add Exercise --%>
             <button phx-click="show_picker" class="btn btn-outline w-full gap-2">
-              <.icon name="hero-plus" class="h-4 w-4" /> Add Exercise
+              <.icon name="hero-plus" class="h-4 w-4" /> {gettext("Add Exercise")}
             </button>
           </div>
 
@@ -215,7 +215,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             <div class="modal-box p-0 h-[80vh] flex flex-col">
               <div class="p-4 border-b border-base-300">
                 <div class="flex justify-between items-center mb-3">
-                  <h3 class="font-bold">Add Exercise</h3>
+                  <h3 class="font-bold">{gettext("Add Exercise")}</h3>
                   <button phx-click="hide_picker" class="btn btn-ghost btn-sm">
                     <.icon name="hero-x-mark" class="h-4 w-4" />
                   </button>
@@ -225,7 +225,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                   phx-keyup="picker_search"
                   phx-debounce="200"
                   name="picker_search"
-                  placeholder="Search exercises..."
+                  placeholder={gettext("Search exercises...")}
                   class="input input-bordered w-full"
                 />
               </div>
@@ -246,7 +246,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               </div>
             </div>
             <form method="dialog" class="modal-backdrop">
-              <button phx-click="hide_picker">close</button>
+              <button phx-click="hide_picker">{gettext("close")}</button>
             </form>
           </dialog>
 
@@ -256,33 +256,39 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             class={["modal modal-bottom sm:modal-middle", @show_discard_modal && "modal-open"]}
           >
             <div class="modal-box">
-              <h3 class="font-bold text-lg">Discard Workout?</h3>
+              <h3 class="font-bold text-lg">{gettext("Discard Workout?")}</h3>
               <p class="py-4 text-base-content/70">
-                All progress will be lost. This cannot be undone.
+                {gettext("All progress will be lost. This cannot be undone.")}
               </p>
               <div class="modal-action">
-                <button phx-click="cancel_discard" class="btn btn-ghost">Keep Going</button>
-                <button phx-click="confirm_discard" class="btn btn-error">Discard</button>
+                <button phx-click="cancel_discard" class="btn btn-ghost">
+                  {gettext("Keep Going")}
+                </button>
+                <button phx-click="confirm_discard" class="btn btn-error">
+                  {gettext("Discard")}
+                </button>
               </div>
             </div>
           </dialog>
         <% else %>
           <%!-- No Active Workout --%>
           <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
-            <span class="font-semibold text-lg">Workout</span>
+            <span class="font-semibold text-lg">{gettext("Workout")}</span>
           </div>
 
           <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
             <.icon name="hero-bolt" class="h-16 w-16 text-primary mb-4" />
-            <h2 class="text-xl font-bold mb-2">Ready to train?</h2>
-            <p class="text-base-content/60 mb-6">Start a new workout or pick from your routines</p>
+            <h2 class="text-xl font-bold mb-2">{gettext("Ready to train?")}</h2>
+            <p class="text-base-content/60 mb-6">
+              {gettext("Start a new workout or pick from your routines")}
+            </p>
 
             <button phx-click="start_empty" class="btn btn-primary w-full max-w-sm mb-3">
-              <.icon name="hero-play" class="h-5 w-5" /> Start Empty Workout
+              <.icon name="hero-play" class="h-5 w-5" /> {gettext("Start Empty Workout")}
             </button>
 
             <a href="/routines" class="btn btn-outline w-full max-w-sm">
-              <.icon name="hero-clipboard-document-list" class="h-5 w-5" /> Choose Routine
+              <.icon name="hero-clipboard-document-list" class="h-5 w-5" /> {gettext("Choose Routine")}
             </a>
           </div>
         <% end %>
@@ -313,7 +319,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
       |> assign(:show_discard_modal, false)
       |> assign(:rest_timer, nil)
       |> assign(:picker_exercises, Exercises.list_exercises())
-      |> assign(:page_title, "Workout")
+      |> assign(:page_title, gettext("Workout"))
 
     # Start from routine if from_routine param present and no in-progress workout
     socket =
@@ -361,7 +367,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
         {:noreply, load_workout_state(socket, workout)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to start workout")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to start workout"))}
     end
   end
 
@@ -371,11 +377,11 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
       {:ok, workout} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Workout completed!")
+         |> put_flash(:info, gettext("Workout completed!"))
          |> push_navigate(to: "/workout/#{workout.id}")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to finish workout")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to finish workout"))}
     end
   end
 
@@ -394,10 +400,10 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
          |> assign(:exercises, [])
          |> assign(:rest_timer, nil)
          |> assign(:show_discard_modal, false)
-         |> put_flash(:info, "Workout discarded")}
+         |> put_flash(:info, gettext("Workout discarded"))}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to discard workout")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to discard workout"))}
     end
   end
 
@@ -545,7 +551,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
         {:noreply, socket |> load_workout_state(workout) |> assign(show_picker: false)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to add exercise")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to add exercise"))}
     end
   end
 

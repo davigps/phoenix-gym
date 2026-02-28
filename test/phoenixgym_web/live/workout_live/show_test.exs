@@ -13,7 +13,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
 
       {:ok, _view, html} = live(conn, "/workout/#{workout.id}")
 
-      assert html =~ (workout.name || "Workout")
+      assert html =~ (workout.name || "Treino")
       assert html =~ exercise.name
       assert html =~ to_string(set.set_number)
       assert html =~ Decimal.to_string(Decimal.round(set.weight, 1))
@@ -28,7 +28,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
       {:ok, _view, html} = live(conn, "/workout/#{workout.id}")
 
       assert html =~ "hero-star"
-      assert html =~ "Personal Record"
+      assert html =~ "Recorde pessoal"
       assert html =~ "pr-star"
     end
 
@@ -103,9 +103,9 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
 
       {:ok, _view, html} = live(conn, "/workout/#{workout.id}")
 
-      assert html =~ "Duration"
+      assert html =~ "Duração"
       assert html =~ "Volume"
-      assert html =~ "Sets"
+      assert html =~ "Séries"
 
       if workout.duration_seconds do
         m = div(workout.duration_seconds, 60)

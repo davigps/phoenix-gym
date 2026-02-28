@@ -13,17 +13,17 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
     ~H"""
     <Layouts.app flash={@flash} active_tab={:dashboard}>
       <div class="p-4 space-y-4">
-        <h1 class="text-2xl font-bold">PhoenixGym</h1>
+        <h1 class="text-2xl font-bold">{gettext("PhoenixGym")}</h1>
 
         <%!-- Quick Start --%>
         <div class="card bg-base-200">
           <div class="card-body p-4">
-            <h2 class="card-title text-base">Quick Start</h2>
+            <h2 class="card-title text-base">{gettext("Quick Start")}</h2>
             <a href="/workout/active" class="btn btn-primary w-full">
-              <.icon name="hero-play" class="h-5 w-5" /> Start Empty Workout
+              <.icon name="hero-play" class="h-5 w-5" /> {gettext("Start Empty Workout")}
             </a>
             <div :if={@quick_start_routines != []} class="mt-2 space-y-1">
-              <p class="text-xs text-base-content/60">Or start from a routine:</p>
+              <p class="text-xs text-base-content/60">{gettext("Or start from a routine:")}</p>
               <a
                 :for={routine <- @quick_start_routines}
                 href={"/workout/active?from_routine=#{routine.id}"}
@@ -39,32 +39,32 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
         <%!-- This Week Stats --%>
         <div class="grid grid-cols-3 gap-2">
           <div class="stat bg-base-200 rounded-box p-3">
-            <div class="stat-title text-xs">Workouts</div>
+            <div class="stat-title text-xs">{gettext("Workouts")}</div>
             <div class="stat-value text-xl">{@workouts_this_week}</div>
-            <div class="stat-desc">this week</div>
+            <div class="stat-desc">{gettext("this week")}</div>
           </div>
           <div class="stat bg-base-200 rounded-box p-3">
-            <div class="stat-title text-xs">Volume</div>
+            <div class="stat-title text-xs">{gettext("Volume")}</div>
             <div class="stat-value text-xl">{format_volume(@volume_this_week, @unit)}</div>
-            <div class="stat-desc">{@unit} total</div>
+            <div class="stat-desc">{gettext("%{unit} total", unit: @unit)}</div>
           </div>
           <div class="stat bg-base-200 rounded-box p-3">
-            <div class="stat-title text-xs">Sets</div>
+            <div class="stat-title text-xs">{gettext("Sets")}</div>
             <div class="stat-value text-xl">{@sets_this_week}</div>
-            <div class="stat-desc">completed</div>
+            <div class="stat-desc">{gettext("completed")}</div>
           </div>
         </div>
 
         <%!-- Streak --%>
         <div :if={@streak_count > 0} class="flex items-center gap-2 p-3 bg-base-200 rounded-box">
           <.icon name="hero-fire" class="h-5 w-5 text-primary" />
-          <span class="font-medium">{@streak_count} day streak</span>
+          <span class="font-medium">{gettext("%{count} day streak", count: @streak_count)}</span>
         </div>
 
         <%!-- Weekly Volume Chart --%>
         <div class="card bg-base-200">
           <div class="card-body p-4">
-            <h2 class="card-title text-base">Weekly Volume</h2>
+            <h2 class="card-title text-base">{gettext("Weekly Volume")}</h2>
             <.volume_chart data={@weekly_volume} />
           </div>
         </div>
@@ -72,7 +72,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
         <%!-- Top Muscle Groups --%>
         <div :if={@top_muscle_groups != []} class="card bg-base-200">
           <div class="card-body p-4">
-            <h2 class="card-title text-base">Top Muscle Groups</h2>
+            <h2 class="card-title text-base">{gettext("Top Muscle Groups")}</h2>
             <div class="flex flex-wrap gap-2">
               <span
                 :for={{muscle, count} <- @top_muscle_groups}
@@ -87,7 +87,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
         <%!-- Recent PRs --%>
         <div :if={@recent_prs != []} class="card bg-base-200">
           <div class="card-body p-4">
-            <h2 class="card-title text-base">Recent PRs</h2>
+            <h2 class="card-title text-base">{gettext("Recent PRs")}</h2>
             <ul class="space-y-1">
               <li :for={pr <- @recent_prs} class="flex justify-between items-center text-sm">
                 <span>{pr.exercise.name}</span>
@@ -100,7 +100,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
         </div>
 
         <p :if={@workouts_this_week == 0} class="text-base-content/50 text-sm text-center py-8">
-          Start your first workout to see stats here!
+          {gettext("Start your first workout to see stats here!")}
         </p>
       </div>
     </Layouts.app>
@@ -137,20 +137,20 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
 
   defp format_volume(_, _), do: "0"
 
-  defp format_muscle(nil), do: "Other"
-  defp format_muscle("full_body"), do: "Full Body"
+  defp format_muscle(nil), do: gettext("Other")
+  defp format_muscle("full_body"), do: gettext("Full Body")
   defp format_muscle(m), do: String.capitalize(m)
 
-  defp pr_label("max_weight"), do: "Max"
-  defp pr_label("max_reps"), do: "Reps"
-  defp pr_label("estimated_1rm"), do: "1RM"
-  defp pr_label("max_volume_set"), do: "Set vol"
-  defp pr_label("max_volume_session"), do: "Session vol"
+  defp pr_label("max_weight"), do: gettext("Max")
+  defp pr_label("max_reps"), do: gettext("Reps")
+  defp pr_label("estimated_1rm"), do: gettext("1RM")
+  defp pr_label("max_volume_set"), do: gettext("Set vol")
+  defp pr_label("max_volume_session"), do: gettext("Session vol")
   defp pr_label(t), do: t
 
   defp format_pr_value(pr, unit) do
     if pr.record_type == "max_reps" do
-      "#{Decimal.to_integer(pr.value)} reps"
+      gettext("%{count} reps", count: Decimal.to_integer(pr.value))
     else
       Units.display_weight(pr.value, unit)
     end

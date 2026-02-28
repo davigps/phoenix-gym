@@ -18,7 +18,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
             </a>
           </div>
           <div class="navbar-center">
-            <span class="font-semibold">{@workout.name || "Workout"}</span>
+            <span class="font-semibold">{@workout.name || gettext("Workout")}</span>
           </div>
           <div class="navbar-end">
             <button phx-click="delete" class="btn btn-ghost btn-sm text-error" id="delete-workout-btn">
@@ -31,16 +31,16 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
           <%!-- Summary Stats --%>
           <div class="grid grid-cols-3 gap-2">
             <div class="stat bg-base-200 rounded-box p-3">
-              <div class="stat-title text-xs">Duration</div>
+              <div class="stat-title text-xs">{gettext("Duration")}</div>
               <div class="stat-value text-lg">{format_duration(@workout.duration_seconds)}</div>
             </div>
             <div class="stat bg-base-200 rounded-box p-3">
-              <div class="stat-title text-xs">Volume</div>
+              <div class="stat-title text-xs">{gettext("Volume")}</div>
               <div class="stat-value text-lg">{format_volume(@workout.total_volume, @unit)}</div>
               <div class="stat-desc">{@unit}</div>
             </div>
             <div class="stat bg-base-200 rounded-box p-3">
-              <div class="stat-title text-xs">Sets</div>
+              <div class="stat-title text-xs">{gettext("Sets")}</div>
               <div class="stat-value text-lg">{@workout.total_sets || 0}</div>
             </div>
           </div>
@@ -62,10 +62,10 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Type</th>
-                      <th>Weight ({@unit})</th>
-                      <th>Reps</th>
-                      <th>RPE</th>
+                      <th>{gettext("Type")}</th>
+                      <th>{gettext("Weight (%{unit})", unit: @unit)}</th>
+                      <th>{gettext("Reps")}</th>
+                      <th>{gettext("RPE")}</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -84,7 +84,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                         <span
                           :if={set.id in @pr_set_ids}
                           class="pr-star text-warning"
-                          title="Personal Record"
+                          title={gettext("Personal Record")}
                         >
                           <.icon name="hero-star" class="h-4 w-4" />
                         </span>
@@ -101,19 +101,21 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
       <%!-- Delete confirmation modal --%>
       <div :if={@show_confirm_delete?} id="confirm-delete-modal" class="modal modal-open">
         <div class="modal-box">
-          <h3 class="font-bold text-lg">Delete Workout</h3>
-          <p class="py-2">Are you sure? This cannot be undone.</p>
+          <h3 class="font-bold text-lg">{gettext("Delete Workout")}</h3>
+          <p class="py-2">{gettext("Are you sure? This cannot be undone.")}</p>
           <div class="modal-action">
             <button id="confirm-delete-btn" phx-click="confirm_delete" class="btn btn-error">
-              Delete
+              {gettext("Delete")}
             </button>
             <button id="cancel-delete-btn" phx-click="cancel_delete" class="btn btn-ghost">
-              Cancel
+              {gettext("Cancel")}
             </button>
           </div>
         </div>
         <form method="dialog" class="modal-backdrop">
-          <button type="button" phx-click="cancel_delete" id="modal-backdrop-close">close</button>
+          <button type="button" phx-click="cancel_delete" id="modal-backdrop-close">
+            {gettext("close")}
+          </button>
         </form>
       </div>
     </Layouts.app>
@@ -130,7 +132,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
       socket
       |> assign(:unit, unit)
       |> assign(:workout, workout)
-      |> assign(:page_title, workout.name || "Workout")
+      |> assign(:page_title, workout.name || gettext("Workout"))
       |> assign(:pr_set_ids, pr_set_ids)
       |> assign(:show_confirm_delete?, false)
 
@@ -147,14 +149,14 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Workout deleted")
+         |> put_flash(:info, gettext("Workout deleted"))
          |> push_navigate(to: "/workout/history")}
 
       {:error, _} ->
         {:noreply,
          socket
          |> assign(:show_confirm_delete?, false)
-         |> put_flash(:error, "Failed to delete workout")}
+         |> put_flash(:error, gettext("Failed to delete workout"))}
     end
   end
 

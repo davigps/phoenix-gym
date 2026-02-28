@@ -14,7 +14,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-2">
           <div class="navbar-start">
             <a href="/exercises" class="btn btn-ghost btn-sm gap-1">
-              <.icon name="hero-arrow-left" class="h-4 w-4" /> Back
+              <.icon name="hero-arrow-left" class="h-4 w-4" /> {gettext("Back")}
             </a>
           </div>
           <div class="navbar-center">
@@ -28,7 +28,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
             <span class="badge badge-ghost">{@exercise.category}</span>
             <span class="badge badge-ghost">{@exercise.primary_muscle}</span>
             <span class="badge badge-outline">{@exercise.equipment}</span>
-            <span :if={@exercise.is_custom} class="badge badge-secondary">Custom</span>
+            <span :if={@exercise.is_custom} class="badge badge-secondary">{gettext("Custom")}</span>
           </div>
 
           <div :if={@exercise.instructions} class="prose prose-sm max-w-none">
@@ -37,9 +37,9 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
 
           <%!-- Personal Records --%>
           <div>
-            <h2 class="font-semibold text-lg mb-2">Personal Records</h2>
+            <h2 class="font-semibold text-lg mb-2">{gettext("Personal Records")}</h2>
             <div :if={@records == %{}} class="text-base-content/50 text-sm">
-              No records yet. Start logging this exercise!
+              {gettext("No records yet. Start logging this exercise!")}
             </div>
             <div :if={@records != %{}} class="space-y-2">
               <div
@@ -73,13 +73,15 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
     {:ok, socket}
   end
 
-  defp pr_label("max_weight"), do: "Max Weight"
-  defp pr_label("max_reps"), do: "Max Reps"
-  defp pr_label("estimated_1rm"), do: "Estimated 1RM"
-  defp pr_label("max_volume_set"), do: "Max Set Volume"
-  defp pr_label("max_volume_session"), do: "Max Session Volume"
+  defp pr_label("max_weight"), do: gettext("Max Weight")
+  defp pr_label("max_reps"), do: gettext("Max Reps")
+  defp pr_label("estimated_1rm"), do: gettext("Estimated 1RM")
+  defp pr_label("max_volume_set"), do: gettext("Max Set Volume")
+  defp pr_label("max_volume_session"), do: gettext("Max Session Volume")
   defp pr_label(t), do: t
 
-  defp format_pr(%{record_type: "max_reps", value: v}, _unit), do: "#{Decimal.to_integer(v)} reps"
+  defp format_pr(%{record_type: "max_reps", value: v}, _unit),
+    do: gettext("%{count} reps", count: Decimal.to_integer(v))
+
   defp format_pr(%{value: v}, unit), do: Units.display_weight(v, unit)
 end

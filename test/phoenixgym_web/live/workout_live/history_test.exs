@@ -37,7 +37,7 @@ defmodule PhoenixgymWeb.WorkoutLive.HistoryTest do
 
       {:ok, _view, html} = live(conn, "/workout/history")
 
-      assert html =~ (workout.name || "Workout")
+      assert html =~ (workout.name || "Treino")
 
       if workout.duration_seconds do
         m = div(workout.duration_seconds, 60)
@@ -50,15 +50,15 @@ defmodule PhoenixgymWeb.WorkoutLive.HistoryTest do
       end
 
       if workout.total_sets do
-        assert html =~ "#{workout.total_sets} sets"
+        assert html =~ "#{workout.total_sets} séries"
       end
     end
 
     test "empty state when no completed workouts", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/workout/history")
 
-      assert html =~ "No workouts yet"
-      assert html =~ "Start Workout"
+      assert html =~ "Nenhum treino ainda"
+      assert html =~ "Iniciar treino"
       assert html =~ "/workout/active"
     end
 

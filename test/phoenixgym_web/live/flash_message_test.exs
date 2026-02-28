@@ -25,8 +25,8 @@ defmodule PhoenixgymWeb.FlashMessageTest do
           }
         })
 
-      # Inline validation error for name (Ecto default message)
-      assert html =~ "can't be blank" or html =~ "blank"
+      # Inline validation error for name (Ecto default message in Portuguese)
+      assert html =~ "não pode ficar em branco" or html =~ "em branco"
       assert has_element?(view, "form")
     end
 

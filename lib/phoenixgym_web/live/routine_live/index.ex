@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
 
   alias Phoenixgym.Routines
   alias Phoenixgym.Routines.Routine
+  alias PhoenixgymWeb.CoreComponents
 
   @impl true
   def render(assigns) do
@@ -12,38 +13,38 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-2">
           <div class="flex-1">
-            <span class="font-semibold text-lg">Routines</span>
+            <span class="font-semibold text-lg">{gettext("Routines")}</span>
           </div>
           <div class="flex-none">
             <a href="/routines/new" class="btn btn-ghost btn-sm gap-1">
-              <.icon name="hero-plus" class="h-4 w-4" /> New
+              <.icon name="hero-plus" class="h-4 w-4" /> {gettext("New")}
             </a>
           </div>
         </div>
 
         <div :if={@live_action == :new} class="p-4 border-b border-base-300 bg-base-200">
-          <h2 class="font-semibold mb-3">New Routine</h2>
+          <h2 class="font-semibold mb-3">{gettext("New Routine")}</h2>
           <.form for={@form} phx-submit="create" phx-change="validate" class="space-y-3">
             <input
               type="text"
               name="routine[name]"
               value={@form[:name].value}
               class="input input-bordered w-full"
-              placeholder="Routine name (e.g. Push Day A)"
+              placeholder={gettext("Routine name (e.g. Push Day A)")}
               autofocus
             />
-            <p :for={{msg, _} <- @form[:name].errors} class="text-error text-sm mt-1">
-              {msg}
+            <p :for={err <- @form[:name].errors} class="text-error text-sm mt-1">
+              {CoreComponents.translate_error(err)}
             </p>
             <textarea
               name="routine[notes]"
               class="textarea textarea-bordered w-full"
-              placeholder="Notes (optional)"
+              placeholder={gettext("Notes (optional)")}
               rows="2"
             >{@form[:notes].value}</textarea>
             <div class="flex gap-2">
-              <button type="submit" class="btn btn-primary flex-1">Create</button>
-              <a href="/routines" class="btn btn-ghost flex-1">Cancel</a>
+              <button type="submit" class="btn btn-primary flex-1">{gettext("Create")}</button>
+              <a href="/routines" class="btn btn-ghost flex-1">{gettext("Cancel")}</a>
             </div>
           </.form>
         </div>
@@ -52,10 +53,12 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
           <div :if={@routines == []}>
             <div class="flex flex-col items-center justify-center py-16 text-center">
               <.icon name="hero-clipboard-document-list" class="h-12 w-12 text-base-content/30 mb-4" />
-              <h3 class="font-semibold text-lg">No routines yet</h3>
-              <p class="text-base-content/60 text-sm mt-1">Create your first workout routine</p>
+              <h3 class="font-semibold text-lg">{gettext("No routines yet")}</h3>
+              <p class="text-base-content/60 text-sm mt-1">
+                {gettext("Create your first workout routine")}
+              </p>
               <a href="/routines/new" class="btn btn-primary mt-4">
-                <.icon name="hero-plus" class="h-4 w-4" /> New Routine
+                <.icon name="hero-plus" class="h-4 w-4" /> {gettext("New Routine")}
               </a>
             </div>
           </div>
@@ -70,7 +73,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
                 <div>
                   <h3 class="font-semibold">{routine.name}</h3>
                   <p class="text-sm text-base-content/60">
-                    {length(routine.routine_exercises)} exercises
+                    {gettext("%{count} exercises", count: length(routine.routine_exercises))}
                   </p>
                 </div>
                 <.icon name="hero-chevron-right" class="h-5 w-5 text-base-content/40" />
@@ -91,7 +94,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
       socket
       |> assign(:routines, routines)
       |> assign(:form, to_form(Routines.change_routine(%Routine{})))
-      |> assign(:page_title, "Routines")
+      |> assign(:page_title, gettext("Routines"))
 
     {:ok, socket}
   end

@@ -14,7 +14,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
       {:ok, _view, html} = live(conn, "/exercises")
 
-      assert html =~ "Exercises"
+      assert html =~ "Exercícios"
       assert html =~ exercise.name
     end
 
@@ -26,7 +26,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
         |> element("form[phx-change='search']")
         |> render_change(%{"search" => "ZZZNothingMatchesThis999"})
 
-      assert html =~ "No exercises found"
+      assert html =~ "Nenhum exercício encontrado"
     end
 
     test "typing in search box filters the list", %{conn: conn} do
@@ -63,7 +63,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
         |> element("button[phx-value-muscle='chest']")
         |> render_click()
 
-      assert html =~ "Chest"
+      assert html =~ "Peito"
       refute html =~ "BackEx"
     end
 
@@ -159,11 +159,11 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
     test "page mounts and renders form", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/exercises/new")
 
-      assert html =~ "New Exercise"
-      assert html =~ "Name"
-      assert html =~ "Category"
-      assert html =~ "Primary Muscle"
-      assert html =~ "Equipment"
+      assert html =~ "Novo exercício"
+      assert html =~ "Nome"
+      assert html =~ "Categoria"
+      assert html =~ "Músculo principal"
+      assert html =~ "Equipamento"
     end
 
     test "valid form submission creates exercise and redirects", %{conn: conn} do
@@ -222,7 +222,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
         })
         |> render_submit()
 
-      assert html =~ "can&#39;t be blank"
+      assert html =~ "não pode ficar em branco" or html =~ "em branco"
     end
 
     test "validate event shows inline errors on invalid data", %{conn: conn} do
@@ -238,7 +238,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
         })
         |> render_change()
 
-      assert html =~ "can&#39;t be blank"
+      assert html =~ "não pode ficar em branco" or html =~ "em branco"
     end
 
     test "duplicate name shows error", %{conn: conn} do
@@ -264,7 +264,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
         })
         |> render_submit()
 
-      assert html =~ "has already been taken"
+      assert html =~ "já está em uso"
     end
   end
 
@@ -295,7 +295,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
       {:ok, _view, html} = live(conn, "/exercises/#{exercise.id}")
 
-      assert html =~ "No records yet"
+      assert html =~ "Nenhum registro ainda"
     end
 
     test "shows Personal Records section when PRs exist", %{conn: conn} do
@@ -305,7 +305,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
       # After completing a workout with sets, PRs should be computed
       # (PRs are computed when finish_workout is called)
-      assert html =~ "Personal Records"
+      assert html =~ "Recordes pessoais"
     end
 
     test "shows custom badge for custom exercises", %{conn: conn} do
@@ -313,7 +313,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
       {:ok, _view, html} = live(conn, "/exercises/#{exercise.id}")
 
-      assert html =~ "Custom"
+      assert html =~ "Personalizado"
     end
 
     test "back button navigates to exercise list", %{conn: conn} do

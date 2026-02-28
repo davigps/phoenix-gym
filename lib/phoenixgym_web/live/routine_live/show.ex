@@ -20,7 +20,9 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
             <span class="font-semibold">{@routine.name}</span>
           </div>
           <div class="navbar-end">
-            <a href={"/routines/#{@routine.id}/edit"} class="btn btn-ghost btn-sm">Edit</a>
+            <a href={"/routines/#{@routine.id}/edit"} class="btn btn-ghost btn-sm">
+              {gettext("Edit")}
+            </a>
           </div>
         </div>
 
@@ -29,13 +31,13 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
 
           <%!-- Start Workout Button --%>
           <button phx-click="start_workout" class="btn btn-primary w-full">
-            <.icon name="hero-play" class="h-5 w-5" /> Start Workout
+            <.icon name="hero-play" class="h-5 w-5" /> {gettext("Start Workout")}
           </button>
 
           <%!-- Exercise List --%>
           <div>
             <h2 class="font-semibold mb-2">
-              {length(@routine.routine_exercises)} Exercises
+              {gettext("%{count} Exercises", count: length(@routine.routine_exercises))}
             </h2>
             <div class="space-y-2">
               <div
@@ -44,7 +46,9 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
               >
                 <div class="flex-1">
                   <p class="font-medium">{re.exercise.name}</p>
-                  <p class="text-sm text-base-content/60">{re.target_sets} sets</p>
+                  <p class="text-sm text-base-content/60">
+                    {gettext("%{count} sets", count: re.target_sets)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -53,20 +57,20 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
           <%!-- Actions --%>
           <div class="flex gap-2 pt-4">
             <button phx-click="duplicate" class="btn btn-ghost btn-sm flex-1">
-              <.icon name="hero-document-duplicate" class="h-4 w-4" /> Duplicate
+              <.icon name="hero-document-duplicate" class="h-4 w-4" /> {gettext("Duplicate")}
             </button>
             <button phx-click="delete" class="btn btn-error btn-sm flex-1">
-              <.icon name="hero-trash" class="h-4 w-4" /> Delete
+              <.icon name="hero-trash" class="h-4 w-4" /> {gettext("Delete")}
             </button>
           </div>
         </div>
 
         <.confirm_modal
           id="delete-routine-modal"
-          title="Delete Routine"
-          message="Are you sure you want to delete this routine? This cannot be undone."
+          title={gettext("Delete Routine")}
+          message={gettext("Are you sure you want to delete this routine? This cannot be undone.")}
           confirm_event="confirm_delete"
-          confirm_label="Delete"
+          confirm_label={gettext("Delete")}
           confirm_class="btn-error"
         />
       </div>
@@ -93,7 +97,7 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
         {:noreply, push_navigate(socket, to: "/workout/active")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to start workout")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to start workout"))}
     end
   end
 
@@ -103,11 +107,11 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
       {:ok, new_routine} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Routine duplicated!")
+         |> put_flash(:info, gettext("Routine duplicated!"))
          |> push_navigate(to: "/routines/#{new_routine.id}/edit")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to duplicate routine")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to duplicate routine"))}
     end
   end
 
@@ -124,11 +128,11 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Routine deleted")
+         |> put_flash(:info, gettext("Routine deleted"))
          |> push_navigate(to: "/routines")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to delete routine")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to delete routine"))}
     end
   end
 end

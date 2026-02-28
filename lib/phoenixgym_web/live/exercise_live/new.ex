@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
 
   alias Phoenixgym.Exercises
   alias Phoenixgym.Exercises.Exercise
+  alias PhoenixgymWeb.CoreComponents
 
   @impl true
   def render(assigns) do
@@ -17,32 +18,32 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
             </a>
           </div>
           <div class="navbar-center">
-            <span class="font-semibold">New Exercise</span>
+            <span class="font-semibold">{gettext("New Exercise")}</span>
           </div>
         </div>
 
         <div class="p-4">
           <.form for={@form} phx-submit="save" phx-change="validate" class="space-y-4">
             <div class="form-control">
-              <label class="label"><span class="label-text">Name *</span></label>
+              <label class="label"><span class="label-text">{gettext("Name *")}</span></label>
               <input
                 type="text"
                 name="exercise[name]"
                 value={@form[:name].value}
                 class={["input input-bordered w-full", @form[:name].errors != [] && "input-error"]}
-                placeholder="e.g. Romanian Deadlift"
+                placeholder={gettext("e.g. Romanian Deadlift")}
               />
               <label :if={@form[:name].errors != []} class="label">
                 <span class="label-text-alt text-error">
-                  {Enum.map_join(@form[:name].errors, ", ", fn {msg, _} -> msg end)}
+                  {Enum.map_join(@form[:name].errors, ", ", &CoreComponents.translate_error/1)}
                 </span>
               </label>
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Category</span></label>
+              <label class="label"><span class="label-text">{gettext("Category")}</span></label>
               <select name="exercise[category]" class="select select-bordered w-full">
-                <option value="">Select category...</option>
+                <option value="">{gettext("Select category...")}</option>
                 <option
                   :for={cat <- Exercise.categories()}
                   value={cat}
@@ -54,9 +55,9 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Primary Muscle</span></label>
+              <label class="label"><span class="label-text">{gettext("Primary Muscle")}</span></label>
               <select name="exercise[primary_muscle]" class="select select-bordered w-full">
-                <option value="">Select muscle...</option>
+                <option value="">{gettext("Select muscle...")}</option>
                 <option
                   :for={m <- Exercise.muscles()}
                   value={m}
@@ -68,9 +69,9 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Equipment</span></label>
+              <label class="label"><span class="label-text">{gettext("Equipment")}</span></label>
               <select name="exercise[equipment]" class="select select-bordered w-full">
-                <option value="">Select equipment...</option>
+                <option value="">{gettext("Select equipment...")}</option>
                 <option
                   :for={eq <- Exercise.equipment_types()}
                   value={eq}
@@ -82,15 +83,15 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Instructions</span></label>
+              <label class="label"><span class="label-text">{gettext("Instructions")}</span></label>
               <textarea
                 name="exercise[instructions]"
                 class="textarea textarea-bordered w-full h-24"
-                placeholder="How to perform this exercise..."
+                placeholder={gettext("How to perform this exercise...")}
               >{@form[:instructions].value}</textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full">Save Exercise</button>
+            <button type="submit" class="btn btn-primary w-full">{gettext("Save Exercise")}</button>
           </.form>
         </div>
       </div>
@@ -105,7 +106,7 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
     socket =
       socket
       |> assign(:form, form)
-      |> assign(:page_title, "New Exercise")
+      |> assign(:page_title, gettext("New Exercise"))
 
     {:ok, socket}
   end
@@ -127,7 +128,7 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
       {:ok, exercise} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Exercise created!")
+         |> put_flash(:info, gettext("Exercise created!"))
          |> push_navigate(to: "/exercises/#{exercise.id}")}
 
       {:error, changeset} ->

@@ -13,8 +13,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
     test "mounts in idle state when no workout exists", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/workout/active")
 
-      assert html =~ "Start Empty Workout"
-      assert html =~ "Choose Routine"
+      assert html =~ "Iniciar treino vazio"
+      assert html =~ "Escolher rotina"
     end
 
     test "clicking Start Empty Workout creates a DB record and enters in-progress", %{conn: conn} do
@@ -22,8 +22,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
 
       html = view |> element("button[phx-click='start_empty']") |> render_click()
 
-      assert html =~ "Finish"
-      assert html =~ "Add Exercise"
+      assert html =~ "Finalizar"
+      assert html =~ "Adicionar exercício"
       assert Workouts.get_in_progress_workout() != nil
     end
 
@@ -230,7 +230,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
 
       {:ok, _view, html} = live(conn, "/workout/active")
 
-      assert html =~ "Last:"
+      assert html =~ "Última:"
       assert html =~ "75"
     end
 
@@ -262,7 +262,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, _view, html} = live(conn, "/workout/active")
 
       assert html =~ exercise.name
-      assert html =~ "Finish"
+      assert html =~ "Finalizar"
     end
 
     test "restored workout shows correct set count", %{conn: conn} do
@@ -294,7 +294,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       html = view |> element("button[phx-click='discard']") |> render_click()
 
       assert html =~ "confirm_discard"
-      assert html =~ "Discard Workout"
+      assert html =~ "Descartar treino"
     end
 
     test "confirming discard marks workout as discarded and returns to idle", %{conn: conn} do
@@ -306,7 +306,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       view |> element("button[phx-click='discard']") |> render_click()
       html = view |> element("button[phx-click='confirm_discard']") |> render_click()
 
-      assert html =~ "Start Empty Workout"
+      assert html =~ "Iniciar treino vazio"
 
       discarded = Workouts.get_workout!(workout.id)
       assert discarded.status == "discarded"
@@ -319,7 +319,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       view |> element("button[phx-click='discard']") |> render_click()
       html = view |> element("button[phx-click='cancel_discard']") |> render_click()
 
-      assert html =~ "Finish"
+      assert html =~ "Finalizar"
       assert Workouts.get_in_progress_workout() != nil
     end
   end
@@ -416,7 +416,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
         |> render_click()
 
       assert html =~ "skip_rest_timer"
-      assert html =~ "Skip"
+      assert html =~ "Pular"
     end
 
     test "skip_rest_timer hides the rest timer", %{conn: conn} do

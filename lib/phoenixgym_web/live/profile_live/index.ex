@@ -10,14 +10,14 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
       <div class="flex flex-col">
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
-          <span class="font-semibold text-lg">Profile</span>
+          <span class="font-semibold text-lg">{gettext("Profile")}</span>
         </div>
 
         <div class="p-4 space-y-6">
           <%!-- Display Name --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">
-              <h2 class="card-title text-base">Display Name</h2>
+              <h2 class="card-title text-base">{gettext("Display Name")}</h2>
               <form
                 id="profile-form"
                 action="/profile/update_preferences"
@@ -29,10 +29,10 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
                   type="text"
                   name="display_name"
                   value={@display_name}
-                  placeholder="Your name"
+                  placeholder={gettext("Your name")}
                   class="input input-bordered w-full"
                 />
-                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                <button type="submit" class="btn btn-primary btn-sm">{gettext("Save")}</button>
               </form>
             </div>
           </div>
@@ -40,9 +40,9 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
           <%!-- Theme --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">
-              <h2 class="card-title text-base">Appearance</h2>
+              <h2 class="card-title text-base">{gettext("Appearance")}</h2>
               <div class="flex items-center justify-between">
-                <span class="text-sm">Theme</span>
+                <span class="text-sm">{gettext("Theme")}</span>
                 <Layouts.theme_toggle />
               </div>
             </div>
@@ -51,26 +51,26 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
           <%!-- Unit Preference --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">
-              <h2 class="card-title text-base">Units</h2>
+              <h2 class="card-title text-base">{gettext("Units")}</h2>
               <div class="flex items-center justify-between">
-                <span class="text-sm">Weight Unit</span>
+                <span class="text-sm">{gettext("Weight Unit")}</span>
                 <div class="join">
                   <.link
                     navigate={~p"/profile/set_unit?unit=kg"}
                     class={["btn btn-sm join-item", @unit == "kg" && "btn-primary"]}
                   >
-                    kg
+                    {gettext("kg")}
                   </.link>
                   <.link
                     navigate={~p"/profile/set_unit?unit=lbs"}
                     class={["btn btn-sm join-item", @unit == "lbs" && "btn-primary"]}
                   >
-                    lbs
+                    {gettext("lbs")}
                   </.link>
                 </div>
               </div>
               <p class="text-xs text-base-content/60 mt-2">
-                Sample: {Units.display_weight(Decimal.new("100"), @unit)}
+                {gettext("Sample: %{value}", value: Units.display_weight(Decimal.new("100"), @unit))}
               </p>
             </div>
           </div>
@@ -78,15 +78,15 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
           <%!-- App Info --%>
           <div class="card bg-base-200">
             <div class="card-body p-4">
-              <h2 class="card-title text-base">About</h2>
+              <h2 class="card-title text-base">{gettext("About")}</h2>
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-base-content/60">Version</span>
+                  <span class="text-base-content/60">{gettext("Version")}</span>
                   <span>1.0.0</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-base-content/60">Built with</span>
-                  <span>Phoenix + LiveView</span>
+                  <span class="text-base-content/60">{gettext("Built with")}</span>
+                  <span>{gettext("Phoenix + LiveView")}</span>
                 </div>
               </div>
             </div>
@@ -106,7 +106,7 @@ defmodule PhoenixgymWeb.ProfileLive.Index do
       socket
       |> assign(:unit, unit)
       |> assign(:display_name, display_name)
-      |> assign(:page_title, "Profile")
+      |> assign(:page_title, gettext("Profile"))
 
     {:ok, socket}
   end

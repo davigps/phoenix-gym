@@ -150,7 +150,7 @@ defmodule Phoenixgym.RoutinesTest do
 
       assert {:ok, copy} = Routines.duplicate_routine(routine)
 
-      assert copy.name == "#{routine.name} (Copy)"
+      assert copy.name == "#{routine.name} (Cópia)"
       copy = Routines.get_routine!(copy.id)
       assert length(copy.routine_exercises) == 2
 

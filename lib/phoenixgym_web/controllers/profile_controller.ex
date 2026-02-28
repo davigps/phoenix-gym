@@ -14,7 +14,7 @@ defmodule PhoenixgymWeb.ProfileController do
   def update_preferences(conn, %{"display_name" => name}) do
     conn
     |> put_session("display_name", name)
-    |> put_flash(:info, "Profile updated")
+    |> put_flash(:info, gettext("Profile updated"))
     |> redirect(to: "/profile")
   end
 

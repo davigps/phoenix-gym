@@ -3,6 +3,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
 
   alias Phoenixgym.Routines
   alias Phoenixgym.Exercises
+  alias PhoenixgymWeb.CoreComponents
 
   @impl true
   def render(assigns) do
@@ -17,10 +18,10 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
             </a>
           </div>
           <div class="navbar-center">
-            <span class="font-semibold">Edit Routine</span>
+            <span class="font-semibold">{gettext("Edit Routine")}</span>
           </div>
           <div class="navbar-end">
-            <button phx-click="save" class="btn btn-primary btn-sm">Save</button>
+            <button phx-click="save" class="btn btn-primary btn-sm">{gettext("Save")}</button>
           </div>
         </div>
 
@@ -32,27 +33,27 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
               name="routine[name]"
               value={@form[:name].value}
               class="input input-bordered w-full font-semibold"
-              placeholder="Routine name"
+              placeholder={gettext("Routine name")}
             />
-            <p :for={{msg, _} <- @form[:name].errors} class="text-error text-sm mt-1">
-              {msg}
+            <p :for={err <- @form[:name].errors} class="text-error text-sm mt-1">
+              {CoreComponents.translate_error(err)}
             </p>
             <textarea
               name="routine[notes]"
               class="textarea textarea-bordered w-full"
-              placeholder="Notes (optional)"
+              placeholder={gettext("Notes (optional)")}
               rows="2"
             >{@form[:notes].value}</textarea>
           </.form>
 
           <%!-- Exercises --%>
           <div>
-            <h2 class="font-semibold mb-2">Exercises</h2>
+            <h2 class="font-semibold mb-2">{gettext("Exercises")}</h2>
             <div
               :if={@routine.routine_exercises == []}
               class="text-base-content/50 text-sm text-center py-4"
             >
-              No exercises yet. Add some below!
+              {gettext("No exercises yet. Add some below!")}
             </div>
             <div class="space-y-2">
               <div
@@ -78,7 +79,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
                 <div class="flex-1 min-w-0">
                   <p class="font-medium truncate">{re.exercise.name}</p>
                   <div class="flex items-center gap-2 mt-1">
-                    <span class="text-sm text-base-content/60">Sets:</span>
+                    <span class="text-sm text-base-content/60">{gettext("Sets:")}</span>
                     <input
                       type="number"
                       min="1"
@@ -107,7 +108,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
             phx-click="show_picker"
             class="btn btn-outline w-full gap-2"
           >
-            <.icon name="hero-plus" class="h-4 w-4" /> Add Exercise
+            <.icon name="hero-plus" class="h-4 w-4" /> {gettext("Add Exercise")}
           </button>
         </div>
 
@@ -116,7 +117,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
           <div class="modal-box p-0 h-[80vh] flex flex-col">
             <div class="p-4 border-b border-base-300">
               <div class="flex justify-between items-center mb-3">
-                <h3 class="font-bold">Add Exercise</h3>
+                <h3 class="font-bold">{gettext("Add Exercise")}</h3>
                 <button phx-click="hide_picker" class="btn btn-ghost btn-sm">
                   <.icon name="hero-x-mark" class="h-4 w-4" />
                 </button>
@@ -126,7 +127,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
                 phx-keyup="picker_search"
                 phx-debounce="200"
                 name="picker_search"
-                placeholder="Search exercises..."
+                placeholder={gettext("Search exercises...")}
                 class="input input-bordered w-full"
               />
             </div>
@@ -147,7 +148,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
             </div>
           </div>
           <form method="dialog" class="modal-backdrop">
-            <button phx-click="hide_picker">close</button>
+            <button phx-click="hide_picker">{gettext("close")}</button>
           </form>
         </dialog>
       </div>
@@ -166,7 +167,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
       |> assign(:form, to_form(Routines.change_routine(routine)))
       |> assign(:show_picker, false)
       |> assign(:picker_exercises, exercises)
-      |> assign(:page_title, "Edit #{routine.name}")
+      |> assign(:page_title, gettext("Edit %{name}", name: routine.name))
 
     {:ok, socket}
   end
@@ -185,7 +186,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
       {:ok, _routine} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Routine saved!")
+         |> put_flash(:info, gettext("Routine saved!"))
          |> push_navigate(to: "/routines/#{socket.assigns.routine.id}")}
 
       {:error, changeset} ->
@@ -219,7 +220,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
         {:noreply, assign(socket, routine: updated_routine, show_picker: false)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to add exercise")}
+        {:noreply, put_flash(socket, :error, gettext("Failed to add exercise"))}
     end
   end
 

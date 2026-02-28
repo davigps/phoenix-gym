@@ -100,7 +100,7 @@ defmodule Phoenixgym.Routines do
 
     Repo.transaction(fn ->
       {:ok, new_routine} =
-        create_routine(%{name: "#{routine.name} (Copy)", notes: routine.notes})
+        create_routine(%{name: "#{routine.name} (Cópia)", notes: routine.notes})
 
       Enum.each(routine.routine_exercises, fn re ->
         Repo.insert!(%RoutineExercise{
