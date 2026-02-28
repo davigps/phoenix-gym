@@ -26,8 +26,18 @@ defmodule Phoenixgym.Workouts.Workout do
 
   def changeset(workout, attrs) do
     workout
-    |> cast(attrs, [:routine_id, :name, :notes, :status, :started_at, :finished_at,
-                    :duration_seconds, :total_volume, :total_sets, :total_reps])
+    |> cast(attrs, [
+      :routine_id,
+      :name,
+      :notes,
+      :status,
+      :started_at,
+      :finished_at,
+      :duration_seconds,
+      :total_volume,
+      :total_sets,
+      :total_reps
+    ])
     |> validate_required([:started_at, :status])
     |> validate_inclusion(:status, @statuses)
   end

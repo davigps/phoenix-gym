@@ -30,7 +30,9 @@ defmodule Phoenixgym.WorkoutsTest do
     end
 
     test "invalid status is rejected" do
-      errors = errors_on(Workout.changeset(%Workout{}, Map.put(@valid_workout_attrs, :status, "paused")))
+      errors =
+        errors_on(Workout.changeset(%Workout{}, Map.put(@valid_workout_attrs, :status, "paused")))
+
       assert errors[:status] != nil
     end
 
@@ -62,7 +64,11 @@ defmodule Phoenixgym.WorkoutsTest do
     end
 
     test "invalid set_type is rejected" do
-      errors = errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :set_type, "superset")))
+      errors =
+        errors_on(
+          WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :set_type, "superset"))
+        )
+
       assert errors[:set_type] != nil
     end
 
@@ -74,7 +80,9 @@ defmodule Phoenixgym.WorkoutsTest do
     end
 
     test "weight cannot be negative" do
-      errors = errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :weight, "-1")))
+      errors =
+        errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :weight, "-1")))
+
       assert errors[:weight] != nil
     end
 
@@ -83,10 +91,14 @@ defmodule Phoenixgym.WorkoutsTest do
     end
 
     test "rpe must be between 1 and 10" do
-      errors_low = errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :rpe, "0")))
+      errors_low =
+        errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :rpe, "0")))
+
       assert errors_low[:rpe] != nil
 
-      errors_high = errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :rpe, "11")))
+      errors_high =
+        errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :rpe, "11")))
+
       assert errors_high[:rpe] != nil
     end
 
@@ -98,7 +110,9 @@ defmodule Phoenixgym.WorkoutsTest do
     end
 
     test "set_number must be positive" do
-      errors = errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :set_number, 0)))
+      errors =
+        errors_on(WorkoutSet.changeset(%WorkoutSet{}, Map.put(@valid_set_attrs, :set_number, 0)))
+
       assert errors[:set_number] != nil
     end
   end
@@ -143,8 +157,20 @@ defmodule Phoenixgym.WorkoutsTest do
       {:ok, workout} = Workouts.start_workout()
       pos = Workouts.next_exercise_position(workout.id)
       {:ok, we} = Workouts.create_workout_exercise(workout.id, exercise.id, pos)
-      Workouts.create_workout_set(we.id, 1, %{weight: "100.0", reps: 5, set_type: "normal", is_completed: true})
-      Workouts.create_workout_set(we.id, 2, %{weight: "80.0", reps: 8, set_type: "normal", is_completed: true})
+
+      Workouts.create_workout_set(we.id, 1, %{
+        weight: "100.0",
+        reps: 5,
+        set_type: "normal",
+        is_completed: true
+      })
+
+      Workouts.create_workout_set(we.id, 2, %{
+        weight: "80.0",
+        reps: 8,
+        set_type: "normal",
+        is_completed: true
+      })
 
       assert {:ok, finished} = Workouts.finish_workout(workout)
       assert finished.status == "completed"
@@ -161,8 +187,20 @@ defmodule Phoenixgym.WorkoutsTest do
       {:ok, workout} = Workouts.start_workout()
       pos = Workouts.next_exercise_position(workout.id)
       {:ok, we} = Workouts.create_workout_exercise(workout.id, exercise.id, pos)
-      Workouts.create_workout_set(we.id, 1, %{weight: "100.0", reps: 5, set_type: "normal", is_completed: true})
-      Workouts.create_workout_set(we.id, 2, %{weight: "100.0", reps: 5, set_type: "normal", is_completed: false})
+
+      Workouts.create_workout_set(we.id, 1, %{
+        weight: "100.0",
+        reps: 5,
+        set_type: "normal",
+        is_completed: true
+      })
+
+      Workouts.create_workout_set(we.id, 2, %{
+        weight: "100.0",
+        reps: 5,
+        set_type: "normal",
+        is_completed: false
+      })
 
       {:ok, finished} = Workouts.finish_workout(workout)
       assert finished.total_sets == 1
@@ -188,6 +226,48 @@ defmodule Phoenixgym.WorkoutsTest do
       completed_ids = Workouts.list_workouts() |> Enum.map(& &1.id)
       assert completed.id in completed_ids
       refute in_progress.id in completed_ids
+    end
+  end
+
+  describe "list_completed_workouts/1" do
+    test "returns only status completed workouts ordered by finished_at descending" do
+      %{workout: w1} = completed_workout_fixture()
+      %{workout: w2} = completed_workout_fixture()
+      {:ok, _in_progress} = Workouts.start_workout()
+      {:ok, discarded} = Workouts.start_workout()
+      Workouts.discard_workout(discarded)
+
+      list = Workouts.list_completed_workouts()
+      ids = Enum.map(list, & &1.id)
+      assert w1.id in ids
+      assert w2.id in ids
+      refute discarded.id in ids
+      assert list == Enum.sort_by(list, & &1.finished_at, {:desc, DateTime})
+    end
+
+    test "respects limit option" do
+      completed_workout_fixture()
+      completed_workout_fixture()
+      completed_workout_fixture()
+
+      list = Workouts.list_completed_workouts(limit: 2)
+      assert length(list) == 2
+    end
+
+    test "respects offset option" do
+      %{workout: first} = completed_workout_fixture()
+      completed_workout_fixture()
+      completed_workout_fixture()
+
+      list = Workouts.list_completed_workouts(limit: 1, offset: 1)
+      assert length(list) == 1
+      refute hd(list).id == first.id
+    end
+
+    test "default limit is 20" do
+      for _ <- 1..25, do: completed_workout_fixture()
+      list = Workouts.list_completed_workouts()
+      assert length(list) == 20
     end
   end
 
@@ -233,7 +313,9 @@ defmodule Phoenixgym.WorkoutsTest do
       {:ok, we} = Workouts.create_workout_exercise(workout.id, exercise.id, 0)
       {:ok, set} = Workouts.create_workout_set(we.id, 1)
 
-      assert {:ok, updated} = Workouts.update_workout_set(set, %{weight: "75.5", reps: 8, rpe: "8.5"})
+      assert {:ok, updated} =
+               Workouts.update_workout_set(set, %{weight: "75.5", reps: 8, rpe: "8.5"})
+
       assert Decimal.equal?(updated.weight, Decimal.new("75.5"))
       assert updated.reps == 8
       assert Decimal.equal?(updated.rpe, Decimal.new("8.5"))

@@ -16,8 +16,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Index do
           </div>
           <div class="flex-none">
             <a href="/exercises/new" class="btn btn-ghost btn-sm gap-1">
-              <.icon name="hero-plus" class="h-4 w-4" />
-              Custom
+              <.icon name="hero-plus" class="h-4 w-4" /> Custom
             </a>
           </div>
         </div>

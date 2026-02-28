@@ -13,6 +13,19 @@ defmodule Phoenixgym.Workouts do
     |> Repo.all()
   end
 
+  @doc "Returns completed workouts ordered by finished_at descending, with pagination."
+  def list_completed_workouts(opts \\ []) do
+    limit = Keyword.get(opts, :limit, 20)
+    offset = Keyword.get(opts, :offset, 0)
+
+    Workout
+    |> where([w], w.status == "completed")
+    |> order_by([w], desc: w.finished_at)
+    |> limit(^limit)
+    |> offset(^offset)
+    |> Repo.all()
+  end
+
   @doc "Gets the current in-progress workout, if any."
   def get_in_progress_workout do
     Workout
@@ -73,10 +86,12 @@ defmodule Phoenixgym.Workouts do
 
   @doc "Finishes a workout, computing stats and marking PRs."
   def finish_workout(%Workout{} = workout) do
-    workout = Repo.preload(workout,
-      [workout_exercises: [workout_sets: []]],
-      force: true
-    )
+    workout =
+      Repo.preload(
+        workout,
+        [workout_exercises: [workout_sets: []]],
+        force: true
+      )
 
     finished_at = DateTime.utc_now()
     started_at = workout.started_at
@@ -166,8 +181,13 @@ defmodule Phoenixgym.Workouts do
 
     if next do
       Repo.transaction(fn ->
-        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id), set: [position: next.position])
-        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^next.id), set: [position: we.position])
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id),
+          set: [position: next.position]
+        )
+
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^next.id),
+          set: [position: we.position]
+        )
       end)
     else
       {:ok, :already_last}
@@ -186,8 +206,13 @@ defmodule Phoenixgym.Workouts do
 
     if prev do
       Repo.transaction(fn ->
-        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id), set: [position: prev.position])
-        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^prev.id), set: [position: we.position])
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id),
+          set: [position: prev.position]
+        )
+
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^prev.id),
+          set: [position: we.position]
+        )
       end)
     else
       {:ok, :already_first}

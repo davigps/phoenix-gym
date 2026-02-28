@@ -21,7 +21,15 @@ defmodule Phoenixgym.Workouts.WorkoutSet do
 
   def changeset(workout_set, attrs) do
     workout_set
-    |> cast(attrs, [:workout_exercise_id, :set_number, :set_type, :weight, :reps, :rpe, :is_completed])
+    |> cast(attrs, [
+      :workout_exercise_id,
+      :set_number,
+      :set_type,
+      :weight,
+      :reps,
+      :rpe,
+      :is_completed
+    ])
     |> validate_required([:workout_exercise_id, :set_number])
     |> validate_inclusion(:set_type, @set_types)
     |> validate_number(:weight, greater_than_or_equal_to: 0)

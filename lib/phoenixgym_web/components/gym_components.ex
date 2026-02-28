@@ -14,7 +14,12 @@ defmodule PhoenixgymWeb.GymComponents do
   def bottom_nav(assigns) do
     tabs = [
       %{id: :dashboard, href: "/", icon: "hero-home-solid", label: "Home"},
-      %{id: :routines, href: "/routines", icon: "hero-clipboard-document-list-solid", label: "Routines"},
+      %{
+        id: :routines,
+        href: "/routines",
+        icon: "hero-clipboard-document-list-solid",
+        label: "Routines"
+      },
       %{id: :workout, href: "/workout/active", icon: "hero-play-solid", label: "Workout"},
       %{id: :history, href: "/workout/history", icon: "hero-clock-solid", label: "History"},
       %{id: :profile, href: "/profile", icon: "hero-user-circle-solid", label: "Profile"}
@@ -52,7 +57,10 @@ defmodule PhoenixgymWeb.GymComponents do
               {tab.label}
             </span>
           <% else %>
-            <.icon name={if(@active == tab.id, do: tab.icon, else: String.replace(tab.icon, "-solid", ""))} class="h-6 w-6" />
+            <.icon
+              name={if(@active == tab.id, do: tab.icon, else: String.replace(tab.icon, "-solid", ""))}
+              class="h-6 w-6"
+            />
             <span class={[
               "text-[10px] font-medium leading-tight",
               if(@active == tab.id, do: "text-primary", else: "")

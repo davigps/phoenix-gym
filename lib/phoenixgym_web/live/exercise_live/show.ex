@@ -13,8 +13,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-2">
           <div class="navbar-start">
             <a href="/exercises" class="btn btn-ghost btn-sm gap-1">
-              <.icon name="hero-arrow-left" class="h-4 w-4" />
-              Back
+              <.icon name="hero-arrow-left" class="h-4 w-4" /> Back
             </a>
           </div>
           <div class="navbar-center">
@@ -42,7 +41,10 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
               No records yet. Start logging this exercise!
             </div>
             <div :if={@records != %{}} class="space-y-2">
-              <div :for={{type, record} <- @records} class="flex justify-between items-center p-2 bg-base-200 rounded-lg">
+              <div
+                :for={{type, record} <- @records}
+                class="flex justify-between items-center p-2 bg-base-200 rounded-lg"
+              >
                 <span class="text-sm">{pr_label(type)}</span>
                 <span class="font-bold">{format_pr(record)}</span>
               </div>

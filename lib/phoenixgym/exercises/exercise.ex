@@ -24,9 +24,19 @@ defmodule Phoenixgym.Exercises.Exercise do
 
   def changeset(exercise, attrs) do
     exercise
-    |> cast(attrs, [:name, :category, :primary_muscle, :secondary_muscles, :equipment, :instructions, :is_custom])
+    |> cast(attrs, [
+      :name,
+      :category,
+      :primary_muscle,
+      :secondary_muscles,
+      :equipment,
+      :instructions,
+      :is_custom
+    ])
     |> validate_required([:name])
-    |> validate_inclusion(:category, @categories, message: "must be one of: #{Enum.join(@categories, ", ")}")
+    |> validate_inclusion(:category, @categories,
+      message: "must be one of: #{Enum.join(@categories, ", ")}"
+    )
     |> validate_inclusion(:primary_muscle, @muscles, message: "must be a valid muscle group")
     |> validate_inclusion(:equipment, @equipment, message: "must be a valid equipment type")
     |> unique_constraint(:name)

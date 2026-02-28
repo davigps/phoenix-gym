@@ -516,15 +516,15 @@ Testing tasks:
 **Goal**: View past sessions.
 
 Tasks:
-- [ ] Workout history list with infinite scroll or pagination (using LiveView streams)
-- [ ] Workout detail view: full exercise/set breakdown, volume, duration
-- [ ] PR highlights within workout detail (star icon on PR sets)
-- [ ] Delete workout (with confirmation)
+- [x] Workout history list with infinite scroll or pagination (using LiveView streams)
+- [x] Workout detail view: full exercise/set breakdown, volume, duration
+- [x] PR highlights within workout detail (star icon on PR sets)
+- [x] Delete workout (with confirmation)
 
 Testing tasks:
-- [ ] `WorkoutLive.History` LiveView test: only completed workouts appear; most recent is first; each card shows correct date, duration, and volume; "Load More" / scroll appends next page without re-rendering existing items (stream correctness)
-- [ ] `WorkoutLive.Show` LiveView test: all exercises and sets rendered; PR-flagged sets show star indicator; delete button shows confirmation modal; confirming deletes and redirects to history
-- [ ] History query: `list_completed_workouts/1` returns only `status = "completed"` rows, ordered descending by `finished_at`, with correct pagination offsets
+- [x] `WorkoutLive.History` LiveView test: only completed workouts appear; most recent is first; each card shows correct date, duration, and volume; "Load More" / scroll appends next page without re-rendering existing items (stream correctness)
+- [x] `WorkoutLive.Show` LiveView test: all exercises and sets rendered; PR-flagged sets show star indicator; delete button shows confirmation modal; confirming deletes and redirects to history
+- [x] History query: `list_completed_workouts/1` returns only `status = "completed"` rows, ordered descending by `finished_at`, with correct pagination offsets
 
 ### Phase 6 — Personal Records & Stats
 

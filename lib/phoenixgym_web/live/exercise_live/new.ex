@@ -43,7 +43,11 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
               <label class="label"><span class="label-text">Category</span></label>
               <select name="exercise[category]" class="select select-bordered w-full">
                 <option value="">Select category...</option>
-                <option :for={cat <- Exercise.categories()} value={cat} selected={@form[:category].value == cat}>
+                <option
+                  :for={cat <- Exercise.categories()}
+                  value={cat}
+                  selected={@form[:category].value == cat}
+                >
                   {String.capitalize(cat)}
                 </option>
               </select>
@@ -53,7 +57,11 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
               <label class="label"><span class="label-text">Primary Muscle</span></label>
               <select name="exercise[primary_muscle]" class="select select-bordered w-full">
                 <option value="">Select muscle...</option>
-                <option :for={m <- Exercise.muscles()} value={m} selected={@form[:primary_muscle].value == m}>
+                <option
+                  :for={m <- Exercise.muscles()}
+                  value={m}
+                  selected={@form[:primary_muscle].value == m}
+                >
                   {String.capitalize(m)}
                 </option>
               </select>
@@ -63,7 +71,11 @@ defmodule PhoenixgymWeb.ExerciseLive.New do
               <label class="label"><span class="label-text">Equipment</span></label>
               <select name="exercise[equipment]" class="select select-bordered w-full">
                 <option value="">Select equipment...</option>
-                <option :for={eq <- Exercise.equipment_types()} value={eq} selected={@form[:equipment].value == eq}>
+                <option
+                  :for={eq <- Exercise.equipment_types()}
+                  value={eq}
+                  selected={@form[:equipment].value == eq}
+                >
                   {String.capitalize(eq)}
                 </option>
               </select>

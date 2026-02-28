@@ -32,7 +32,10 @@ defmodule Phoenixgym.RecordsTest do
 
     test "invalid record_type is rejected" do
       exercise = exercise_fixture()
-      attrs = @valid_attrs |> Map.put(:exercise_id, exercise.id) |> Map.put(:record_type, "best_set")
+
+      attrs =
+        @valid_attrs |> Map.put(:exercise_id, exercise.id) |> Map.put(:record_type, "best_set")
+
       errors = errors_on(PersonalRecord.changeset(%PersonalRecord{}, attrs))
       assert errors[:record_type] != nil
     end
@@ -49,7 +52,10 @@ defmodule Phoenixgym.RecordsTest do
 
     test "value must be greater than 0" do
       exercise = exercise_fixture()
-      attrs = @valid_attrs |> Map.put(:exercise_id, exercise.id) |> Map.put(:value, Decimal.new("0"))
+
+      attrs =
+        @valid_attrs |> Map.put(:exercise_id, exercise.id) |> Map.put(:value, Decimal.new("0"))
+
       errors = errors_on(PersonalRecord.changeset(%PersonalRecord{}, attrs))
       assert errors[:value] != nil
     end
@@ -196,8 +202,57 @@ defmodule Phoenixgym.RecordsTest do
       best = Records.get_best_records(exercise.id)
       assert Map.has_key?(best, "estimated_1rm")
 
-      expected = Decimal.mult(Decimal.new("100"), Decimal.add(Decimal.new(1), Decimal.div(Decimal.new(10), Decimal.new(30))))
+      expected =
+        Decimal.mult(
+          Decimal.new("100"),
+          Decimal.add(Decimal.new(1), Decimal.div(Decimal.new(10), Decimal.new(30)))
+        )
+
       assert Decimal.equal?(best["estimated_1rm"].value, expected)
+    end
+  end
+
+  describe "list_pr_set_ids_for_workout/1" do
+    test "returns set ids that have a PR for the given workout" do
+      %{workout: workout, set: set, exercise: _exercise} = completed_workout_fixture()
+      Records.compute_and_save_prs(workout)
+
+      set_ids = Records.list_pr_set_ids_for_workout(workout.id)
+      assert set.id in set_ids
+    end
+
+    test "returns empty list when workout has no PRs linked to sets" do
+      %{workout: workout} = completed_workout_fixture()
+      # Don't call compute_and_save_prs, or call it but PRs might not have workout_set_id yet
+      set_ids = Records.list_pr_set_ids_for_workout(workout.id)
+      assert set_ids == []
+    end
+
+    test "returns only set ids from the given workout" do
+      exercise = exercise_fixture()
+      {:ok, w1} = Workouts.start_workout()
+      pos = Workouts.next_exercise_position(w1.id)
+      {:ok, we1} = Workouts.create_workout_exercise(w1.id, exercise.id, pos)
+
+      {:ok, set1} =
+        Workouts.create_workout_set(we1.id, 1, %{weight: "100.0", reps: 5, is_completed: true})
+
+      {:ok, finished1} = Workouts.finish_workout(w1)
+      Records.compute_and_save_prs(finished1)
+
+      exercise2 = exercise_fixture()
+      {:ok, w2} = Workouts.start_workout()
+      pos2 = Workouts.next_exercise_position(w2.id)
+      {:ok, we2} = Workouts.create_workout_exercise(w2.id, exercise2.id, pos2)
+      Workouts.create_workout_set(we2.id, 1, %{weight: "50.0", reps: 10, is_completed: true})
+      {:ok, finished2} = Workouts.finish_workout(w2)
+      Records.compute_and_save_prs(finished2)
+
+      set_ids_1 = Records.list_pr_set_ids_for_workout(w1.id)
+      set_ids_2 = Records.list_pr_set_ids_for_workout(w2.id)
+
+      assert set1.id in set_ids_1
+      refute set1.id in set_ids_2
     end
   end
 end

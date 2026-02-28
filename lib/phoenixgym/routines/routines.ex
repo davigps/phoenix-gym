@@ -15,7 +15,9 @@ defmodule Phoenixgym.Routines do
   def get_routine!(id) do
     Routine
     |> Repo.get!(id)
-    |> Repo.preload(routine_exercises: {from(re in RoutineExercise, order_by: re.position), :exercise})
+    |> Repo.preload(
+      routine_exercises: {from(re in RoutineExercise, order_by: re.position), :exercise}
+    )
   end
 
   @doc "Creates a routine."

@@ -33,7 +33,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -54,14 +57,19 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
       set = workout.workout_exercises |> hd() |> Map.fetch!(:workout_sets) |> hd()
 
       view
-      |> element("input[phx-blur='update_set'][phx-value-id='#{set.id}'][phx-value-field='weight']")
+      |> element(
+        "input[phx-blur='update_set'][phx-value-id='#{set.id}'][phx-value-field='weight']"
+      )
       |> render_blur(%{"value" => "80.5"})
 
       updated_set = Workouts.get_workout_set!(set.id)
@@ -74,7 +82,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -82,7 +93,9 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
 
       html =
         view
-        |> element("input[type='checkbox'][phx-click='toggle_complete'][phx-value-id='#{set.id}']")
+        |> element(
+          "input[type='checkbox'][phx-click='toggle_complete'][phx-value-id='#{set.id}']"
+        )
         |> render_click()
 
       assert html =~ "bg-success/20"
@@ -97,14 +110,19 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
       we = hd(workout.workout_exercises)
 
       # Add a second set so we can remove one
-      view |> element("button[phx-click='add_set'][phx-value-workout-exercise-id='#{we.id}']") |> render_click()
+      view
+      |> element("button[phx-click='add_set'][phx-value-workout-exercise-id='#{we.id}']")
+      |> render_click()
 
       workout = Workouts.get_workout!(workout.id)
       [set1, _set2] = hd(workout.workout_exercises).workout_sets
@@ -133,7 +151,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -181,6 +202,7 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, workout} = Workouts.start_workout_from_routine(routine)
 
       workout = Workouts.get_workout!(workout.id)
+
       total_sets =
         workout.workout_exercises
         |> Enum.flat_map(& &1.workout_sets)
@@ -225,7 +247,9 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
   # ── Crash recovery ────────────────────────────────────────────────────────
 
   describe "crash recovery" do
-    test "re-mounting with existing in-progress workout restores all exercises and sets", %{conn: conn} do
+    test "re-mounting with existing in-progress workout restores all exercises and sets", %{
+      conn: conn
+    } do
       exercise = exercise_fixture(%{"name" => "CrashEx_#{System.unique_integer()}"})
 
       {:ok, workout} = Workouts.start_workout(%{"name" => "Crash Recovery Test"})
@@ -311,9 +335,16 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       view |> element("button[phx-click='start_empty']") |> render_click()
 
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{ex1.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{ex1.id}']")
+      |> render_click()
+
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{ex2.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{ex2.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -335,9 +366,16 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       view |> element("button[phx-click='start_empty']") |> render_click()
 
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{ex1.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{ex1.id}']")
+      |> render_click()
+
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{ex2.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{ex2.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -361,7 +399,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -369,7 +410,9 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
 
       html =
         view
-        |> element("input[type='checkbox'][phx-click='toggle_complete'][phx-value-id='#{set.id}']")
+        |> element(
+          "input[type='checkbox'][phx-click='toggle_complete'][phx-value-id='#{set.id}']"
+        )
         |> render_click()
 
       assert html =~ "skip_rest_timer"
@@ -382,7 +425,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)
@@ -426,7 +472,10 @@ defmodule PhoenixgymWeb.WorkoutLive.ActiveTest do
       {:ok, view, _html} = live(conn, "/workout/active")
       view |> element("button[phx-click='start_empty']") |> render_click()
       view |> element("button[phx-click='show_picker']") |> render_click()
-      view |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']") |> render_click()
+
+      view
+      |> element("button[phx-click='add_exercise'][phx-value-id='#{exercise.id}']")
+      |> render_click()
 
       workout = Workouts.get_in_progress_workout()
       workout = Workouts.get_workout!(workout.id)

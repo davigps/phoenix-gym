@@ -29,8 +29,7 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
 
           <%!-- Start Workout Button --%>
           <button phx-click="start_workout" class="btn btn-primary w-full">
-            <.icon name="hero-play" class="h-5 w-5" />
-            Start Workout
+            <.icon name="hero-play" class="h-5 w-5" /> Start Workout
           </button>
 
           <%!-- Exercise List --%>
@@ -54,12 +53,10 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
           <%!-- Actions --%>
           <div class="flex gap-2 pt-4">
             <button phx-click="duplicate" class="btn btn-ghost btn-sm flex-1">
-              <.icon name="hero-document-duplicate" class="h-4 w-4" />
-              Duplicate
+              <.icon name="hero-document-duplicate" class="h-4 w-4" /> Duplicate
             </button>
             <button phx-click="delete" class="btn btn-error btn-sm flex-1">
-              <.icon name="hero-trash" class="h-4 w-4" />
-              Delete
+              <.icon name="hero-trash" class="h-4 w-4" /> Delete
             </button>
           </div>
         </div>

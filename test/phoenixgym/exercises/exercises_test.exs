@@ -25,18 +25,24 @@ defmodule Phoenixgym.ExercisesTest do
     end
 
     test "invalid category is rejected" do
-      errors = errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "category", "crossfit")))
+      errors =
+        errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "category", "crossfit")))
+
       assert errors[:category] != nil
       assert hd(errors[:category]) =~ "must be one of"
     end
 
     test "invalid primary_muscle is rejected" do
-      errors = errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "primary_muscle", "toe")))
+      errors =
+        errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "primary_muscle", "toe")))
+
       assert errors[:primary_muscle] != nil
     end
 
     test "invalid equipment is rejected" do
-      errors = errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "equipment", "stick")))
+      errors =
+        errors_on(Exercise.changeset(%Exercise{}, Map.put(@valid_attrs, "equipment", "stick")))
+
       assert errors[:equipment] != nil
     end
 
@@ -138,7 +144,10 @@ defmodule Phoenixgym.ExercisesTest do
     end
 
     test "list_exercises/1 filters by primary_muscle" do
-      {:ok, _} = Exercises.create_exercise(Map.put(@valid_attrs, "name", "Chest Ex#{System.unique_integer()}"))
+      {:ok, _} =
+        Exercises.create_exercise(
+          Map.put(@valid_attrs, "name", "Chest Ex#{System.unique_integer()}")
+        )
 
       {:ok, _} =
         Exercises.create_exercise(%{
@@ -153,7 +162,12 @@ defmodule Phoenixgym.ExercisesTest do
     end
 
     test "list_exercises/1 filters by equipment" do
-      {:ok, _} = Exercises.create_exercise(Map.put(@valid_attrs, "name", "KB Ex#{System.unique_integer()}") |> Map.put("equipment", "kettlebell"))
+      {:ok, _} =
+        Exercises.create_exercise(
+          Map.put(@valid_attrs, "name", "KB Ex#{System.unique_integer()}")
+          |> Map.put("equipment", "kettlebell")
+        )
+
       results = Exercises.list_exercises(equipment: "kettlebell")
       assert Enum.all?(results, &(&1.equipment == "kettlebell"))
     end

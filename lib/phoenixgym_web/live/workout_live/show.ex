@@ -2,6 +2,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
   use PhoenixgymWeb, :live_view
 
   alias Phoenixgym.Workouts
+  alias Phoenixgym.Records
 
   @impl true
   def render(assigns) do
@@ -19,7 +20,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
             <span class="font-semibold">{@workout.name || "Workout"}</span>
           </div>
           <div class="navbar-end">
-            <button phx-click="delete" class="btn btn-ghost btn-sm text-error">
+            <button phx-click="delete" class="btn btn-ghost btn-sm text-error" id="delete-workout-btn">
               <.icon name="hero-trash" class="h-4 w-4" />
             </button>
           </div>
@@ -64,6 +65,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                       <th>Weight (kg)</th>
                       <th>Reps</th>
                       <th>RPE</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -77,6 +79,15 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
                       <td>{if set.weight, do: Decimal.round(set.weight, 1), else: "—"}</td>
                       <td>{set.reps || "—"}</td>
                       <td>{if set.rpe, do: Decimal.round(set.rpe, 1), else: "—"}</td>
+                      <td>
+                        <span
+                          :if={set.id in @pr_set_ids}
+                          class="pr-star text-warning"
+                          title="Personal Record"
+                        >
+                          <.icon name="hero-star" class="h-4 w-4" />
+                        </span>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -85,6 +96,25 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
           </div>
         </div>
       </div>
+
+      <%!-- Delete confirmation modal --%>
+      <div :if={@show_confirm_delete?} id="confirm-delete-modal" class="modal modal-open">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">Delete Workout</h3>
+          <p class="py-2">Are you sure? This cannot be undone.</p>
+          <div class="modal-action">
+            <button id="confirm-delete-btn" phx-click="confirm_delete" class="btn btn-error">
+              Delete
+            </button>
+            <button id="cancel-delete-btn" phx-click="cancel_delete" class="btn btn-ghost">
+              Cancel
+            </button>
+          </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button type="button" phx-click="cancel_delete" id="modal-backdrop-close">close</button>
+        </form>
+      </div>
     </Layouts.app>
     """
   end
@@ -92,17 +122,24 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     workout = Workouts.get_workout!(id)
+    pr_set_ids = Records.list_pr_set_ids_for_workout(workout.id) |> MapSet.new()
 
     socket =
       socket
       |> assign(:workout, workout)
       |> assign(:page_title, workout.name || "Workout")
+      |> assign(:pr_set_ids, pr_set_ids)
+      |> assign(:show_confirm_delete?, false)
 
     {:ok, socket}
   end
 
   @impl true
   def handle_event("delete", _params, socket) do
+    {:noreply, assign(socket, :show_confirm_delete?, true)}
+  end
+
+  def handle_event("confirm_delete", _params, socket) do
     case Workouts.delete_workout(socket.assigns.workout) do
       {:ok, _} ->
         {:noreply,
@@ -111,8 +148,15 @@ defmodule PhoenixgymWeb.WorkoutLive.Show do
          |> push_navigate(to: "/workout/history")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to delete workout")}
+        {:noreply,
+         socket
+         |> assign(:show_confirm_delete?, false)
+         |> put_flash(:error, "Failed to delete workout")}
     end
+  end
+
+  def handle_event("cancel_delete", _params, socket) do
+    {:noreply, assign(socket, :show_confirm_delete?, false)}
   end
 
   defp format_datetime(nil), do: ""

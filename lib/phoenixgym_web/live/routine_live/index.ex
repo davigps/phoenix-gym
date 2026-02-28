@@ -16,8 +16,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
           </div>
           <div class="flex-none">
             <a href="/routines/new" class="btn btn-ghost btn-sm gap-1">
-              <.icon name="hero-plus" class="h-4 w-4" />
-              New
+              <.icon name="hero-plus" class="h-4 w-4" /> New
             </a>
           </div>
         </div>
@@ -56,8 +55,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
               <h3 class="font-semibold text-lg">No routines yet</h3>
               <p class="text-base-content/60 text-sm mt-1">Create your first workout routine</p>
               <a href="/routines/new" class="btn btn-primary mt-4">
-                <.icon name="hero-plus" class="h-4 w-4" />
-                New Routine
+                <.icon name="hero-plus" class="h-4 w-4" /> New Routine
               </a>
             </div>
           </div>

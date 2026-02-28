@@ -46,8 +46,15 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
     end
 
     test "selecting a muscle chip narrows results", %{conn: conn} do
-      exercise_fixture(%{"name" => "ChestEx#{System.unique_integer()}", "primary_muscle" => "chest"})
-      exercise_fixture(%{"name" => "BackEx#{System.unique_integer()}", "primary_muscle" => "back"})
+      exercise_fixture(%{
+        "name" => "ChestEx#{System.unique_integer()}",
+        "primary_muscle" => "chest"
+      })
+
+      exercise_fixture(%{
+        "name" => "BackEx#{System.unique_integer()}",
+        "primary_muscle" => "back"
+      })
 
       {:ok, view, _html} = live(conn, "/exercises")
 
@@ -62,7 +69,12 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
     test "selecting 'All' resets muscle filter", %{conn: conn} do
       back_name = "BackExReset#{System.unique_integer()}"
-      exercise_fixture(%{"name" => "ChestExReset#{System.unique_integer()}", "primary_muscle" => "chest"})
+
+      exercise_fixture(%{
+        "name" => "ChestExReset#{System.unique_integer()}",
+        "primary_muscle" => "chest"
+      })
+
       exercise_fixture(%{"name" => back_name, "primary_muscle" => "back"})
 
       {:ok, view, _html} = live(conn, "/exercises")
@@ -83,8 +95,18 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
 
     test "equipment filter narrows results", %{conn: conn} do
       kb_name = "KettlebellEx#{System.unique_integer()}"
-      exercise_fixture(%{"name" => kb_name, "primary_muscle" => "chest", "equipment" => "kettlebell"})
-      exercise_fixture(%{"name" => "BarbellEx#{System.unique_integer()}", "primary_muscle" => "back", "equipment" => "barbell"})
+
+      exercise_fixture(%{
+        "name" => kb_name,
+        "primary_muscle" => "chest",
+        "equipment" => "kettlebell"
+      })
+
+      exercise_fixture(%{
+        "name" => "BarbellEx#{System.unique_integer()}",
+        "primary_muscle" => "back",
+        "equipment" => "barbell"
+      })
 
       {:ok, view, _html} = live(conn, "/exercises")
 
@@ -100,7 +122,12 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
     test "search and muscle filter work together", %{conn: conn} do
       name = "ComboFilterEx#{System.unique_integer()}"
       exercise_fixture(%{"name" => name, "primary_muscle" => "back", "equipment" => "barbell"})
-      exercise_fixture(%{"name" => "OtherCombo#{System.unique_integer()}", "primary_muscle" => "chest", "equipment" => "barbell"})
+
+      exercise_fixture(%{
+        "name" => "OtherCombo#{System.unique_integer()}",
+        "primary_muscle" => "chest",
+        "equipment" => "barbell"
+      })
 
       {:ok, view, _html} = live(conn, "/exercises")
 

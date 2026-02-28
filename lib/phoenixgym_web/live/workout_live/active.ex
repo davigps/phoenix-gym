@@ -20,7 +20,12 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               </button>
             </div>
             <div class="navbar-center">
-              <span class="font-mono text-sm" id="elapsed-timer" phx-hook="WorkoutTimer" data-started-at={DateTime.to_unix(@workout.started_at)}>
+              <span
+                class="font-mono text-sm"
+                id="elapsed-timer"
+                phx-hook="WorkoutTimer"
+                data-started-at={DateTime.to_unix(@workout.started_at)}
+              >
                 00:00:00
               </span>
             </div>
@@ -97,7 +102,10 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               </div>
 
               <%!-- Previous Sets Reference --%>
-              <div :if={item.previous_sets != []} class="text-xs text-base-content/50 flex gap-2 flex-wrap">
+              <div
+                :if={item.previous_sets != []}
+                class="text-xs text-base-content/50 flex gap-2 flex-wrap"
+              >
                 <span class="font-medium">Last:</span>
                 <span :for={s <- item.previous_sets}>
                   {if s.weight, do: "#{Decimal.round(s.weight, 1)}kg", else: "—"}×{s.reps || "—"}
@@ -191,15 +199,13 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                 phx-value-workout-exercise-id={item.workout_exercise.id}
                 class="btn btn-ghost btn-xs w-full gap-1"
               >
-                <.icon name="hero-plus" class="h-3 w-3" />
-                Add Set
+                <.icon name="hero-plus" class="h-3 w-3" /> Add Set
               </button>
             </div>
 
             <%!-- Add Exercise --%>
             <button phx-click="show_picker" class="btn btn-outline w-full gap-2">
-              <.icon name="hero-plus" class="h-4 w-4" />
-              Add Exercise
+              <.icon name="hero-plus" class="h-4 w-4" /> Add Exercise
             </button>
           </div>
 
@@ -244,7 +250,10 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
           </dialog>
 
           <%!-- Discard Confirmation Modal --%>
-          <dialog id="discard-modal" class={["modal modal-bottom sm:modal-middle", @show_discard_modal && "modal-open"]}>
+          <dialog
+            id="discard-modal"
+            class={["modal modal-bottom sm:modal-middle", @show_discard_modal && "modal-open"]}
+          >
             <div class="modal-box">
               <h3 class="font-bold text-lg">Discard Workout?</h3>
               <p class="py-4 text-base-content/70">
@@ -256,7 +265,6 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
               </div>
             </div>
           </dialog>
-
         <% else %>
           <%!-- No Active Workout --%>
           <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
@@ -269,13 +277,11 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             <p class="text-base-content/60 mb-6">Start a new workout or pick from your routines</p>
 
             <button phx-click="start_empty" class="btn btn-primary w-full max-w-sm mb-3">
-              <.icon name="hero-play" class="h-5 w-5" />
-              Start Empty Workout
+              <.icon name="hero-play" class="h-5 w-5" /> Start Empty Workout
             </button>
 
             <a href="/routines" class="btn btn-outline w-full max-w-sm">
-              <.icon name="hero-clipboard-document-list" class="h-5 w-5" />
-              Choose Routine
+              <.icon name="hero-clipboard-document-list" class="h-5 w-5" /> Choose Routine
             </a>
           </div>
         <% end %>
@@ -455,7 +461,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
   @impl true
   def handle_event("move_exercise_up", %{"id" => we_id}, socket) do
-    we = Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
+    we =
+      Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
 
     if we do
       Workouts.move_workout_exercise_up(we.workout_exercise, socket.assigns.workout.id)
@@ -468,7 +475,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
   @impl true
   def handle_event("move_exercise_down", %{"id" => we_id}, socket) do
-    we = Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
+    we =
+      Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
 
     if we do
       Workouts.move_workout_exercise_down(we.workout_exercise, socket.assigns.workout.id)

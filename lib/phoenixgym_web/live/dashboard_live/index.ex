@@ -13,8 +13,7 @@ defmodule PhoenixgymWeb.DashboardLive.Index do
           <div class="card-body p-4">
             <h2 class="card-title text-base">Quick Start</h2>
             <a href="/workout/active" class="btn btn-primary w-full">
-              <.icon name="hero-play" class="h-5 w-5" />
-              Start Empty Workout
+              <.icon name="hero-play" class="h-5 w-5" /> Start Empty Workout
             </a>
           </div>
         </div>

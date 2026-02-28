@@ -48,7 +48,10 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
           <%!-- Exercises --%>
           <div>
             <h2 class="font-semibold mb-2">Exercises</h2>
-            <div :if={@routine.routine_exercises == []} class="text-base-content/50 text-sm text-center py-4">
+            <div
+              :if={@routine.routine_exercises == []}
+              class="text-base-content/50 text-sm text-center py-4"
+            >
               No exercises yet. Add some below!
             </div>
             <div class="space-y-2">
@@ -57,10 +60,18 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
                 class="flex items-center gap-2 p-3 bg-base-200 rounded-lg"
               >
                 <div class="flex flex-col gap-1">
-                  <button phx-click="move_up" phx-value-id={re.exercise_id} class="btn btn-ghost btn-xs p-0">
+                  <button
+                    phx-click="move_up"
+                    phx-value-id={re.exercise_id}
+                    class="btn btn-ghost btn-xs p-0"
+                  >
                     <.icon name="hero-chevron-up" class="h-3 w-3" />
                   </button>
-                  <button phx-click="move_down" phx-value-id={re.exercise_id} class="btn btn-ghost btn-xs p-0">
+                  <button
+                    phx-click="move_down"
+                    phx-value-id={re.exercise_id}
+                    class="btn btn-ghost btn-xs p-0"
+                  >
                     <.icon name="hero-chevron-down" class="h-3 w-3" />
                   </button>
                 </div>
@@ -96,8 +107,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
             phx-click="show_picker"
             class="btn btn-outline w-full gap-2"
           >
-            <.icon name="hero-plus" class="h-4 w-4" />
-            Add Exercise
+            <.icon name="hero-plus" class="h-4 w-4" /> Add Exercise
           </button>
         </div>
 
