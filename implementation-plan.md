@@ -570,20 +570,20 @@ Testing tasks:
 **Goal**: Production-ready mobile experience.
 
 Tasks:
-- [ ] Add PWA manifest (`priv/static/manifest.json`) for "Add to Home Screen"
-- [ ] Service worker for offline support (exercise library, active workout)
-- [ ] Add loading skeletons (DaisyUI `skeleton` class)
-- [ ] Empty state illustrations for lists
-- [ ] Error boundaries and flash messages
-- [ ] Keyboard navigation improvements
-- [ ] Optimize queries (add indexes, avoid N+1 with preloads)
-- [ ] Mobile Safari scroll and input quirks fixes
+- [x] Add PWA manifest (`priv/static/manifest.json`) for "Add to Home Screen"
+- [x] Service worker for offline support (exercise library, active workout)
+- [x] Add loading skeletons (DaisyUI `skeleton` class)
+- [x] Empty state illustrations for lists
+- [x] Error boundaries and flash messages
+- [x] Keyboard navigation improvements
+- [x] Optimize queries (add indexes, avoid N+1 with preloads)
+- [x] Mobile Safari scroll and input quirks fixes
 
 Testing tasks:
-- [ ] End-to-end flow integration test: seed DB → start workout from routine → add a set → complete set → add exercise mid-workout → finish workout → verify history shows the workout → verify PR was recorded
-- [ ] N+1 regression test: assert `list_workouts_with_exercises/0` issues a known maximum number of DB queries (use `Ecto.Sandbox` + query log counting)
-- [ ] Flash message test: invalid form submission renders an `alert` component with error text; successful action renders success flash
-- [ ] Empty state test: history page with no workouts renders "No workouts yet" CTA; exercise library with no search results renders "No exercises found" message
+- [x] End-to-end flow integration test: seed DB → start workout from routine → add a set → complete set → add exercise mid-workout → finish workout → verify history shows the workout → verify PR was recorded
+- [x] N+1 regression test: assert `list_workouts_with_exercises/0` issues a known maximum number of DB queries (use `Ecto.Sandbox` + query log counting)
+- [x] Flash message test: invalid form submission renders an `alert` component with error text; successful action renders success flash
+- [x] Empty state test: history page with no workouts renders "No workouts yet" CTA; exercise library with no search results renders "No exercises found" message
 
 ---
 

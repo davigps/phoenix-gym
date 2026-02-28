@@ -71,6 +71,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
               id="load-more-workouts"
               type="button"
               phx-click="load_more"
+              phx-click-loading
               class="btn btn-outline btn-sm"
             >
               Load More
@@ -85,7 +86,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
   @impl true
   def mount(_params, session, socket) do
     unit = Map.get(session, "unit", "kg")
-    workouts = Workouts.list_completed_workouts(limit: @page_size, offset: 0)
+    workouts = Workouts.list_completed_workouts_with_exercises(limit: @page_size, offset: 0)
     has_more? = length(workouts) == @page_size
 
     socket =
@@ -103,7 +104,7 @@ defmodule PhoenixgymWeb.WorkoutLive.History do
   @impl true
   def handle_event("load_more", _params, socket) do
     offset = socket.assigns.offset
-    next_page = Workouts.list_completed_workouts(limit: @page_size, offset: offset)
+    next_page = Workouts.list_completed_workouts_with_exercises(limit: @page_size, offset: offset)
     has_more? = length(next_page) == @page_size
 
     socket =

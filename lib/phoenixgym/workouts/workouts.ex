@@ -14,6 +14,27 @@ defmodule Phoenixgym.Workouts do
     |> Repo.all()
   end
 
+  @doc "Returns completed workouts ordered by finished_at descending, with pagination.
+  Preloads workout_exercises and exercise to avoid N+1 when rendering history."
+  def list_completed_workouts_with_exercises(opts \\ []) do
+    limit = Keyword.get(opts, :limit, 20)
+    offset = Keyword.get(opts, :offset, 0)
+
+    query =
+      Workout
+      |> where([w], w.status == "completed")
+      |> order_by([w], desc: w.finished_at, desc: w.id)
+      |> limit(^limit)
+      |> offset(^offset)
+
+    query
+    |> Repo.all()
+    |> Repo.preload(workout_exercises: :exercise)
+    |> Enum.map(fn w ->
+      %{w | workout_exercises: Enum.sort_by(w.workout_exercises, & &1.position)}
+    end)
+  end
+
   @doc "Returns completed workouts ordered by finished_at descending, with pagination."
   def list_completed_workouts(opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)

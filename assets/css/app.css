@@ -107,3 +107,31 @@
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Loading skeleton (DaisyUI-style) */
+.skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    oklch(92% 0.01 286 / 0.4) 25%,
+    oklch(96% 0.005 286 / 0.8) 50%,
+    oklch(92% 0.01 286 / 0.4) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-box, 0.5rem);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Mobile Safari: improve scroll and input */
+@supports (-webkit-touch-callout: none) {
+  main {
+    -webkit-overflow-scrolling: touch;
+  }
+  input, select, textarea {
+    font-size: 16px; /* prevents zoom on focus in iOS */
+  }
+}
