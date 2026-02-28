@@ -12,51 +12,57 @@ defmodule PhoenixgymWeb.GymComponents do
     doc: "The currently active tab: :dashboard | :exercises | :workout | :history | :profile"
 
   def bottom_nav(assigns) do
+    tabs = [
+      %{id: :dashboard, href: "/", icon: "hero-home-solid", label: "Home"},
+      %{id: :routines, href: "/routines", icon: "hero-clipboard-document-list-solid", label: "Routines"},
+      %{id: :workout, href: "/workout/active", icon: "hero-play-solid", label: "Workout"},
+      %{id: :history, href: "/workout/history", icon: "hero-clock-solid", label: "History"},
+      %{id: :profile, href: "/profile", icon: "hero-user-circle-solid", label: "Profile"}
+    ]
+
+    assigns = assign(assigns, :tabs, tabs)
+
     ~H"""
-    <div class="btm-nav btm-nav-sm z-50 border-t border-base-300">
-      <a
-        href="/"
-        class={[@active == :dashboard && "active"]}
-        aria-label="Home"
-      >
-        <.icon name="hero-home" class="h-5 w-5" />
-        <span class="btm-nav-label text-xs">Home</span>
-      </a>
-      <a
-        href="/routines"
-        class={[@active == :routines && "active"]}
-        aria-label="Routines"
-      >
-        <.icon name="hero-clipboard-document-list" class="h-5 w-5" />
-        <span class="btm-nav-label text-xs">Routines</span>
-      </a>
-      <a
-        href="/workout/active"
-        class={[@active == :workout && "active"]}
-        aria-label="Start Workout"
-      >
-        <span class="bg-primary rounded-full p-2">
-          <.icon name="hero-play" class="h-6 w-6 text-primary-content" />
-        </span>
-        <span class="btm-nav-label text-xs">Workout</span>
-      </a>
-      <a
-        href="/workout/history"
-        class={[@active == :history && "active"]}
-        aria-label="History"
-      >
-        <.icon name="hero-clock" class="h-5 w-5" />
-        <span class="btm-nav-label text-xs">History</span>
-      </a>
-      <a
-        href="/profile"
-        class={[@active == :profile && "active"]}
-        aria-label="Profile"
-      >
-        <.icon name="hero-user-circle" class="h-5 w-5" />
-        <span class="btm-nav-label text-xs">Profile</span>
-      </a>
-    </div>
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-base-100 border-t border-base-300 safe-area-bottom">
+      <div class="max-w-lg mx-auto flex items-end justify-around px-2 pt-1 pb-2">
+        <a
+          :for={tab <- @tabs}
+          href={tab.href}
+          aria-label={tab.label}
+          class={[
+            "flex flex-col items-center gap-0.5 min-w-0 flex-1 transition-colors",
+            if(tab.id == :workout, do: "-mt-4", else: "pt-1"),
+            if(@active == tab.id && tab.id != :workout,
+              do: "text-primary",
+              else: "text-base-content/50 hover:text-base-content/80"
+            )
+          ]}
+        >
+          <%= if tab.id == :workout do %>
+            <span class={[
+              "flex items-center justify-center h-12 w-12 rounded-full shadow-lg transition-transform hover:scale-105",
+              if(@active == :workout, do: "bg-primary ring-2 ring-primary/30", else: "bg-primary")
+            ]}>
+              <.icon name={tab.icon} class="h-6 w-6 text-primary-content" />
+            </span>
+            <span class={[
+              "text-[10px] font-medium leading-tight",
+              if(@active == :workout, do: "text-primary", else: "text-base-content/50")
+            ]}>
+              {tab.label}
+            </span>
+          <% else %>
+            <.icon name={if(@active == tab.id, do: tab.icon, else: String.replace(tab.icon, "-solid", ""))} class="h-6 w-6" />
+            <span class={[
+              "text-[10px] font-medium leading-tight",
+              if(@active == tab.id, do: "text-primary", else: "")
+            ]}>
+              {tab.label}
+            </span>
+          <% end %>
+        </a>
+      </div>
+    </nav>
     """
   end
 
