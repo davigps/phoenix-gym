@@ -4,6 +4,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   alias Phoenixgym.Workouts
   alias Phoenixgym.Exercises
 
+  @rest_timer_default 90
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -29,6 +31,28 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             </div>
           </div>
 
+          <%!-- Rest Timer Bar --%>
+          <div :if={@rest_timer} class="px-4 py-2 bg-base-200 border-b border-base-300">
+            <div class="flex items-center gap-3">
+              <.icon name="hero-clock" class="h-4 w-4 text-primary shrink-0" />
+              <div class="flex-1">
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="font-medium">Rest</span>
+                  <span class="font-mono">{format_rest(@rest_timer.remaining)}s</span>
+                </div>
+                <progress
+                  class="progress progress-primary w-full"
+                  value={@rest_timer.remaining}
+                  max={@rest_timer.total}
+                >
+                </progress>
+              </div>
+              <button phx-click="skip_rest_timer" class="btn btn-ghost btn-xs">
+                Skip
+              </button>
+            </div>
+          </div>
+
           <%!-- Workout Notes --%>
           <div class="px-4 pt-3">
             <input
@@ -43,12 +67,32 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
           <%!-- Exercise Sections --%>
           <div class="p-4 space-y-6">
-            <div :for={item <- @exercises} class="space-y-2">
+            <div :for={{item, idx} <- Enum.with_index(@exercises)} class="space-y-2">
               <%!-- Exercise Header --%>
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="font-semibold">{item.exercise.name}</h3>
                   <span class="badge badge-sm badge-ghost">{item.exercise.primary_muscle}</span>
+                </div>
+                <div class="flex gap-1">
+                  <button
+                    :if={idx > 0}
+                    phx-click="move_exercise_up"
+                    phx-value-id={item.workout_exercise.id}
+                    class="btn btn-ghost btn-xs"
+                    aria-label="Move up"
+                  >
+                    <.icon name="hero-chevron-up" class="h-3 w-3" />
+                  </button>
+                  <button
+                    :if={idx < length(@exercises) - 1}
+                    phx-click="move_exercise_down"
+                    phx-value-id={item.workout_exercise.id}
+                    class="btn btn-ghost btn-xs"
+                    aria-label="Move down"
+                  >
+                    <.icon name="hero-chevron-down" class="h-3 w-3" />
+                  </button>
                 </div>
               </div>
 
@@ -70,6 +114,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                       <th>kg</th>
                       <th>Reps</th>
                       <th class="w-8">✓</th>
+                      <th class="w-8"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -125,6 +170,16 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
                           phx-value-id={set.id}
                           class="checkbox checkbox-xs checkbox-success"
                         />
+                      </td>
+                      <td>
+                        <button
+                          phx-click="remove_set"
+                          phx-value-id={set.id}
+                          class="btn btn-ghost btn-xs text-error"
+                          aria-label="Remove set"
+                        >
+                          <.icon name="hero-x-mark" class="h-3 w-3" />
+                        </button>
                       </td>
                     </tr>
                   </tbody>
@@ -188,6 +243,20 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
             </form>
           </dialog>
 
+          <%!-- Discard Confirmation Modal --%>
+          <dialog id="discard-modal" class={["modal modal-bottom sm:modal-middle", @show_discard_modal && "modal-open"]}>
+            <div class="modal-box">
+              <h3 class="font-bold text-lg">Discard Workout?</h3>
+              <p class="py-4 text-base-content/70">
+                All progress will be lost. This cannot be undone.
+              </p>
+              <div class="modal-action">
+                <button phx-click="cancel_discard" class="btn btn-ghost">Keep Going</button>
+                <button phx-click="confirm_discard" class="btn btn-error">Discard</button>
+              </div>
+            </div>
+          </dialog>
+
         <% else %>
           <%!-- No Active Workout --%>
           <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-4">
@@ -232,6 +301,8 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
     socket =
       socket
       |> assign(:show_picker, false)
+      |> assign(:show_discard_modal, false)
+      |> assign(:rest_timer, nil)
       |> assign(:picker_exercises, Exercises.list_exercises())
       |> assign(:page_title, "Workout")
 
@@ -286,17 +357,29 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
 
   @impl true
   def handle_event("discard", _params, socket) do
+    {:noreply, assign(socket, show_discard_modal: true)}
+  end
+
+  @impl true
+  def handle_event("confirm_discard", _params, socket) do
     case Workouts.discard_workout(socket.assigns.workout) do
       {:ok, _} ->
         {:noreply,
          socket
          |> assign(:workout, nil)
          |> assign(:exercises, [])
+         |> assign(:rest_timer, nil)
+         |> assign(:show_discard_modal, false)
          |> put_flash(:info, "Workout discarded")}
 
       {:error, _} ->
         {:noreply, put_flash(socket, :error, "Failed to discard workout")}
     end
+  end
+
+  @impl true
+  def handle_event("cancel_discard", _params, socket) do
+    {:noreply, assign(socket, show_discard_modal: false)}
   end
 
   @impl true
@@ -321,11 +404,32 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   end
 
   @impl true
-  def handle_event("toggle_complete", %{"id" => set_id}, socket) do
+  def handle_event("remove_set", %{"id" => set_id}, socket) do
     set = Workouts.get_workout_set!(String.to_integer(set_id))
-    Workouts.update_workout_set(set, %{is_completed: !set.is_completed})
+    Workouts.delete_workout_set(set)
     workout = Workouts.get_workout!(socket.assigns.workout.id)
     {:noreply, load_workout_state(socket, workout)}
+  end
+
+  @impl true
+  def handle_event("toggle_complete", %{"id" => set_id}, socket) do
+    set = Workouts.get_workout_set!(String.to_integer(set_id))
+    new_completed = !set.is_completed
+    Workouts.update_workout_set(set, %{is_completed: new_completed})
+    workout = Workouts.get_workout!(socket.assigns.workout.id)
+
+    socket = load_workout_state(socket, workout)
+
+    socket =
+      if new_completed do
+        timer = %{remaining: @rest_timer_default, total: @rest_timer_default}
+        Process.send_after(self(), :rest_tick, 1000)
+        assign(socket, rest_timer: timer)
+      else
+        socket
+      end
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -345,8 +449,42 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   end
 
   @impl true
+  def handle_event("skip_rest_timer", _params, socket) do
+    {:noreply, assign(socket, rest_timer: nil)}
+  end
+
+  @impl true
+  def handle_event("move_exercise_up", %{"id" => we_id}, socket) do
+    we = Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
+
+    if we do
+      Workouts.move_workout_exercise_up(we.workout_exercise, socket.assigns.workout.id)
+      workout = Workouts.get_workout!(socket.assigns.workout.id)
+      {:noreply, load_workout_state(socket, workout)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("move_exercise_down", %{"id" => we_id}, socket) do
+    we = Enum.find(socket.assigns.exercises, &(&1.workout_exercise.id == String.to_integer(we_id)))
+
+    if we do
+      Workouts.move_workout_exercise_down(we.workout_exercise, socket.assigns.workout.id)
+      workout = Workouts.get_workout!(socket.assigns.workout.id)
+      {:noreply, load_workout_state(socket, workout)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event("show_picker", _params, socket) do
-    {:noreply, assign(socket, show_picker: true)}
+    {:noreply,
+     socket
+     |> assign(:show_picker, true)
+     |> assign(:picker_exercises, Exercises.list_exercises())}
   end
 
   @impl true
@@ -375,4 +513,21 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
         {:noreply, put_flash(socket, :error, "Failed to add exercise")}
     end
   end
+
+  @impl true
+  def handle_info(:rest_tick, socket) do
+    case socket.assigns.rest_timer do
+      nil ->
+        {:noreply, socket}
+
+      %{remaining: 0} ->
+        {:noreply, assign(socket, rest_timer: nil)}
+
+      %{remaining: n, total: total} ->
+        Process.send_after(self(), :rest_tick, 1000)
+        {:noreply, assign(socket, rest_timer: %{remaining: n - 1, total: total})}
+    end
+  end
+
+  defp format_rest(seconds), do: Integer.to_string(seconds)
 end

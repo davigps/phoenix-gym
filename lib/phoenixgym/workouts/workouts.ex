@@ -74,7 +74,8 @@ defmodule Phoenixgym.Workouts do
   @doc "Finishes a workout, computing stats and marking PRs."
   def finish_workout(%Workout{} = workout) do
     workout = Repo.preload(workout,
-      workout_exercises: [workout_sets: []]
+      [workout_exercises: [workout_sets: []]],
+      force: true
     )
 
     finished_at = DateTime.utc_now()
@@ -151,6 +152,46 @@ defmodule Phoenixgym.Workouts do
 
   def delete_workout_exercise(%WorkoutExercise{} = we) do
     Repo.delete(we)
+  end
+
+  @doc "Swaps the position of two adjacent workout exercises (moves `we` down one slot)."
+  def move_workout_exercise_down(%WorkoutExercise{} = we, workout_id) do
+    next =
+      from(w in WorkoutExercise,
+        where: w.workout_id == ^workout_id and w.position > ^we.position,
+        order_by: w.position,
+        limit: 1
+      )
+      |> Repo.one()
+
+    if next do
+      Repo.transaction(fn ->
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id), set: [position: next.position])
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^next.id), set: [position: we.position])
+      end)
+    else
+      {:ok, :already_last}
+    end
+  end
+
+  @doc "Swaps the position of two adjacent workout exercises (moves `we` up one slot)."
+  def move_workout_exercise_up(%WorkoutExercise{} = we, workout_id) do
+    prev =
+      from(w in WorkoutExercise,
+        where: w.workout_id == ^workout_id and w.position < ^we.position,
+        order_by: [desc: w.position],
+        limit: 1
+      )
+      |> Repo.one()
+
+    if prev do
+      Repo.transaction(fn ->
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^we.id), set: [position: prev.position])
+        Repo.update_all(from(w in WorkoutExercise, where: w.id == ^prev.id), set: [position: we.position])
+      end)
+    else
+      {:ok, :already_first}
+    end
   end
 
   @doc "Gets the previous completed sets for an exercise (from last workout)."

@@ -485,10 +485,10 @@ Testing tasks:
 **Goal**: Real-time workout logging with full Hevy-like UX.
 
 Tasks:
-- [ ] Workout LiveView state machine: `idle → in_progress → completed`
-- [ ] Persist in-progress workout to DB immediately (crash recovery)
-- [ ] "Start Workout" button: from routine (pre-populate) or blank
-- [ ] Active workout screen:
+- [x] Workout LiveView state machine: `idle → in_progress → completed`
+- [x] Persist in-progress workout to DB immediately (crash recovery)
+- [x] "Start Workout" button: from routine (pre-populate) or blank
+- [x] Active workout screen:
   - Elapsed timer (JS hook updating every second via `pushEvent`)
   - Exercise sections with collapsible headers
   - Set rows: type selector, weight input, reps input, RPE (optional), complete checkbox
@@ -497,19 +497,19 @@ Tasks:
   - Remove set (swipe or × button)
   - Set type toggle: W (warmup) / N (normal) / D (drop)
   - Completed set row turns green (`bg-success/20`)
-- [ ] Rest timer: auto-start on set completion, configurable duration, countdown display, skip button
-- [ ] Add exercise mid-workout (opens exercise picker modal)
-- [ ] Reorder exercises within workout
-- [ ] Finish workout: compute totals, mark PRs, save, redirect to workout detail
-- [ ] Discard workout with confirmation modal
+- [x] Rest timer: auto-start on set completion, configurable duration, countdown display, skip button
+- [x] Add exercise mid-workout (opens exercise picker modal)
+- [x] Reorder exercises within workout
+- [x] Finish workout: compute totals, mark PRs, save, redirect to workout detail
+- [x] Discard workout with confirmation modal
 
 Testing tasks:
-- [ ] `Workouts` context: `create_workout/1` with and without routine; `add_exercise_to_workout/2` assigns correct position; `add_set/2` increments set number; `update_set/2` persists weight/reps/RPE changes; `toggle_set_complete/1` flips `is_completed`; `finish_workout/1` sets status, `finished_at`, and computes `total_volume`, `total_sets`, `total_reps` correctly; `discard_workout/1` sets status to `"discarded"`
-- [ ] `get_previous_sets/2` query: returns sets only from completed workouts for the given exercise, excludes current workout, ordered by most recent first
-- [ ] `WorkoutLive.Active` LiveView test — start from scratch: mounts in idle state; clicking "Start Workout" creates a DB record and enters in-progress; `add_set` event appends a row; `update_set` event updates assigns; `toggle_set_complete` marks row green; `finish_workout` redirects to `/workout/:id`
-- [ ] `WorkoutLive.Active` LiveView test — start from routine: exercises and target set count pre-populated from routine; previous sets displayed for exercises with history
-- [ ] `WorkoutLive.Active` LiveView test — crash recovery: re-mount with existing in-progress workout in DB restores all exercises and sets from DB
-- [ ] `WorkoutLive.Active` LiveView test — discard flow: confirmation modal shown; confirming deletes workout and redirects to history
+- [x] `Workouts` context: `create_workout/1` with and without routine; `add_exercise_to_workout/2` assigns correct position; `add_set/2` increments set number; `update_set/2` persists weight/reps/RPE changes; `toggle_set_complete/1` flips `is_completed`; `finish_workout/1` sets status, `finished_at`, and computes `total_volume`, `total_sets`, `total_reps` correctly; `discard_workout/1` sets status to `"discarded"`
+- [x] `get_previous_sets/2` query: returns sets only from completed workouts for the given exercise, excludes current workout, ordered by most recent first
+- [x] `WorkoutLive.Active` LiveView test — start from scratch: mounts in idle state; clicking "Start Workout" creates a DB record and enters in-progress; `add_set` event appends a row; `update_set` event updates assigns; `toggle_set_complete` marks row green; `finish_workout` redirects to `/workout/:id`
+- [x] `WorkoutLive.Active` LiveView test — start from routine: exercises and target set count pre-populated from routine; previous sets displayed for exercises with history
+- [x] `WorkoutLive.Active` LiveView test — crash recovery: re-mount with existing in-progress workout in DB restores all exercises and sets from DB
+- [x] `WorkoutLive.Active` LiveView test — discard flow: confirmation modal shown; confirming deletes workout and redirects to history
 
 ### Phase 5 — History & Workout Detail
 
