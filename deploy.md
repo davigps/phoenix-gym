@@ -101,6 +101,7 @@ Use your real GitHub username and repo URL.
 
 | Variable | Value |
 |----------|--------|
+| `PHX_SERVER` | `true` (required so the HTTP server starts) |
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (reference to the Postgres service; use the exact name shown in Railway, e.g. `Postgres`) |
 | `SECRET_KEY_BASE` | The value from `mix phx.gen.secret` (Step 1.2) |
 | `PHX_HOST` | Your public hostname, e.g. `phoenixgym.up.railway.app` (you’ll get this in Step 5) |
@@ -138,6 +139,38 @@ If you have a domain (e.g. from Route 53 or another registrar):
 1. In the app service → **Settings** → **Networking**, add your custom domain.
 2. Follow Railway’s instructions to set the CNAME (or A/AAAA) at your DNS provider.
 3. Set **`PHX_HOST`** to your custom domain (e.g. `app.yourdomain.com`) and redeploy.
+
+---
+
+### Troubleshooting: "relation X does not exist" (missing tables)
+
+If you see **`relation "workouts" does not exist`** or similar, the production database has no tables because **migrations haven’t been run** (e.g. the app started before `DATABASE_URL` was set, or the first deploy failed during migrate).
+
+**Fix: run migrations against the production database.**
+
+**Option 1 – Railway CLI (recommended)**  
+From your project root on your machine:
+
+```bash
+# Install CLI: https://docs.railway.app/guides/cli#installing-the-cli
+# Log in and link this project:
+railway link
+
+# Run migrations in Railway’s environment (uses your app’s DATABASE_URL)
+railway run mix ecto.migrate
+```
+
+**Option 2 – From your machine with DATABASE_URL**  
+1. In Railway: open your **Postgres** service → **Variables** or **Connect** and copy **`DATABASE_URL`** (use the one that’s reachable from the internet if you’re running migrate from your PC).  
+2. Locally, in the project root:
+
+```bash
+MIX_ENV=prod DATABASE_URL="postgresql://user:pass@host:port/railway" mix ecto.migrate
+```
+
+Replace the URL with the real value. Then trigger a **Redeploy** of the Phoenix app so it picks up the new schema (or just refresh the page if the app is already running).
+
+After migrations succeed, the app should work without the "relation does not exist" error.
 
 ---
 

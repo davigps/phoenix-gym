@@ -1,8 +1,11 @@
 # Railway/Nixpacks configuration for Phoenix deployment.
 # See deploy.md for full deployment steps.
+#
+# Migrations run at START (not build): DATABASE_URL is only available at runtime.
 
 [variables]
 MIX_ENV = "prod"
+PHX_SERVER = "true"
 
 [phases.install]
 cmds = [
@@ -18,4 +21,5 @@ cmds = [
 ]
 
 [start]
+# Run migrations first (runtime has DATABASE_URL), then start the server
 cmd = "mix ecto.migrate && mix phx.server"
