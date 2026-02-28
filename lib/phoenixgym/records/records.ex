@@ -4,6 +4,7 @@ defmodule Phoenixgym.Records do
   alias Phoenixgym.Records.PersonalRecord
   alias Phoenixgym.Workouts.WorkoutSet
   alias Phoenixgym.Workouts.WorkoutExercise
+  alias Phoenixgym.WorkoutStats
 
   @doc "Returns all PRs for an exercise."
   def list_records_for_exercise(exercise_id) do
@@ -43,6 +44,18 @@ defmodule Phoenixgym.Records do
     |> Repo.all()
   end
 
+  @doc "Returns one row per record_type for the exercise (the best PR of each type)."
+  def list_prs_for_exercise(exercise_id) do
+    get_best_records(exercise_id)
+    |> Map.values()
+    |> Enum.reject(&is_nil/1)
+  end
+
+  @doc "Returns the latest N PRs across all exercises, ordered by achieved_at descending."
+  def get_recent_prs(limit \\ 5) do
+    list_recent_records(limit)
+  end
+
   @doc "Returns the set IDs (from the given workout) that have a personal record linked to them."
   def list_pr_set_ids_for_workout(workout_id) do
     set_ids_subquery =
@@ -62,7 +75,7 @@ defmodule Phoenixgym.Records do
     |> Repo.all()
   end
 
-  @doc "Checks and creates PR entries after a workout is finished."
+  @doc "Checks and creates PR entries after a workout is finished. Uses WorkoutStats for pure PR computation."
   def compute_and_save_prs(workout) do
     workout =
       Repo.preload(workout,
@@ -72,114 +85,19 @@ defmodule Phoenixgym.Records do
         ]
       )
 
-    Enum.each(workout.workout_exercises, fn we ->
-      completed_sets = Enum.filter(we.workout_sets, & &1.is_completed)
-      exercise_id = we.exercise_id
+    candidates = WorkoutStats.compute_prs(workout)
 
-      existing = get_best_records(exercise_id)
+    Enum.each(candidates, fn pr ->
+      existing = get_best_records(pr.exercise_id)
 
-      if completed_sets == [] do
-        :ok
-      else
-        # Max weight — set that achieved it
-        max_weight_set =
-          completed_sets |> Enum.max_by(fn s -> s.weight || Decimal.new(0) end, Decimal)
-
-        max_weight = max_weight_set.weight || Decimal.new(0)
-
-        maybe_save_pr(
-          exercise_id,
-          "max_weight",
-          max_weight,
-          existing,
-          workout.finished_at,
-          max_weight_set.id
-        )
-
-        # Max reps
-        max_reps_set = completed_sets |> Enum.max_by(fn s -> s.reps || 0 end)
-        max_reps = max_reps_set.reps || 0
-
-        maybe_save_pr(
-          exercise_id,
-          "max_reps",
-          Decimal.new(max_reps),
-          existing,
-          workout.finished_at,
-          max_reps_set.id
-        )
-
-        # Estimated 1RM (Epley formula: weight * (1 + reps/30))
-        best_1rm_set =
-          completed_sets
-          |> Enum.map(fn s ->
-            val =
-              if s.weight && s.reps && s.reps > 0 do
-                Decimal.mult(
-                  s.weight,
-                  Decimal.add(Decimal.new(1), Decimal.div(Decimal.new(s.reps), Decimal.new(30)))
-                )
-              else
-                Decimal.new(0)
-              end
-
-            {s, val}
-          end)
-          |> Enum.max_by(fn {_s, v} -> v end, Decimal)
-
-        set_1rm = elem(best_1rm_set, 0)
-        best_1rm = elem(best_1rm_set, 1)
-
-        maybe_save_pr(
-          exercise_id,
-          "estimated_1rm",
-          best_1rm,
-          existing,
-          workout.finished_at,
-          set_1rm.id
-        )
-
-        # Max volume in single set (weight * reps)
-        max_vol_set_tuple =
-          completed_sets
-          |> Enum.map(fn s ->
-            weight = s.weight || Decimal.new(0)
-            reps = s.reps || 0
-            {s, Decimal.mult(weight, Decimal.new(reps))}
-          end)
-          |> Enum.max_by(fn {_s, v} -> v end, Decimal)
-
-        max_vol_set_val = elem(max_vol_set_tuple, 1)
-        max_vol_set_id = elem(max_vol_set_tuple, 0).id
-
-        maybe_save_pr(
-          exercise_id,
-          "max_volume_set",
-          max_vol_set_val,
-          existing,
-          workout.finished_at,
-          max_vol_set_id
-        )
-
-        # Max volume in session — attribute to first completed set for display
-        session_volume =
-          Enum.reduce(completed_sets, Decimal.new(0), fn s, acc ->
-            weight = s.weight || Decimal.new(0)
-            reps = s.reps || 0
-            Decimal.add(acc, Decimal.mult(weight, Decimal.new(reps)))
-          end)
-
-        first_set_id = completed_sets |> List.first() |> Map.get(:id)
-
-        maybe_save_pr(
-          exercise_id,
-          "max_volume_session",
-          session_volume,
-          existing,
-          workout.finished_at,
-          first_set_id
-        )
-      end
+      maybe_save_pr(
+        pr.exercise_id,
+        pr.record_type,
+        pr.value,
+        existing,
+        pr.achieved_at,
+        pr.workout_set_id
+      )
     end)
   end
 

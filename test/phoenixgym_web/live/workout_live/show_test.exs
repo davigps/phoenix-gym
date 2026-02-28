@@ -5,7 +5,6 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
   import Phoenixgym.Fixtures
 
   alias Phoenixgym.Workouts
-  alias Phoenixgym.Records
 
   describe "WorkoutLive.Show" do
     test "all exercises and sets rendered", %{conn: conn} do
@@ -23,8 +22,8 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
 
     test "PR-flagged sets show star indicator", %{conn: conn} do
       %{workout: workout, set: _set, exercise: _exercise} = completed_workout_fixture()
+      # finish_workout already calls compute_and_save_prs
       workout = Workouts.get_workout!(workout.id)
-      Records.compute_and_save_prs(workout)
 
       {:ok, _view, html} = live(conn, "/workout/#{workout.id}")
 
@@ -34,8 +33,23 @@ defmodule PhoenixgymWeb.WorkoutLive.ShowTest do
     end
 
     test "no star when workout has no PRs", %{conn: conn} do
-      %{workout: workout} = completed_workout_fixture()
-      # Do not call compute_and_save_prs; no PRs for this workout's sets
+      # Build completed workout without finish_workout so compute_and_save_prs is never called
+      exercise = exercise_fixture()
+      {:ok, workout} = Workouts.start_workout(%{"name" => "No PR Workout"})
+      pos = Workouts.next_exercise_position(workout.id)
+      {:ok, we} = Workouts.create_workout_exercise(workout.id, exercise.id, pos)
+      Workouts.create_workout_set(we.id, 1, %{weight: "50.0", reps: 5, is_completed: true})
+      workout = Workouts.get_workout!(workout.id)
+
+      Phoenixgym.Workouts.Workout.changeset(workout, %{
+        status: "completed",
+        finished_at: DateTime.utc_now(),
+        duration_seconds: 0,
+        total_sets: 1,
+        total_reps: 5,
+        total_volume: Decimal.new("250")
+      })
+      |> Phoenixgym.Repo.update()
 
       {:ok, view, html} = live(conn, "/workout/#{workout.id}")
 

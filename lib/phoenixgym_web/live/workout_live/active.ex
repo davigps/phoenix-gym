@@ -291,7 +291,7 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
     workout = Workouts.get_in_progress_workout()
 
     socket =
@@ -311,6 +311,23 @@ defmodule PhoenixgymWeb.WorkoutLive.Active do
       |> assign(:rest_timer, nil)
       |> assign(:picker_exercises, Exercises.list_exercises())
       |> assign(:page_title, "Workout")
+
+    # Start from routine if from_routine param present and no in-progress workout
+    socket =
+      if is_nil(socket.assigns.workout) && params["from_routine"] do
+        try do
+          routine = Phoenixgym.Routines.get_routine!(params["from_routine"])
+
+          case Workouts.start_workout_from_routine(routine) do
+            {:ok, new_workout} -> load_workout_state(socket, new_workout)
+            _ -> socket
+          end
+        rescue
+          Ecto.NoResultsError -> socket
+        end
+      else
+        socket
+      end
 
     {:ok, socket}
   end

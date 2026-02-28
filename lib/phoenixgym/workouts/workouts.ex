@@ -1,6 +1,7 @@
 defmodule Phoenixgym.Workouts do
   import Ecto.Query
   alias Phoenixgym.Repo
+  alias Phoenixgym.Records
   alias Phoenixgym.Workouts.{Workout, WorkoutExercise, WorkoutSet}
 
   @doc "Returns completed workouts ordered by most recent."
@@ -113,16 +114,20 @@ defmodule Phoenixgym.Workouts do
         Decimal.add(acc, Decimal.mult(weight, Decimal.new(reps)))
       end)
 
-    workout
-    |> Workout.changeset(%{
-      status: "completed",
-      finished_at: finished_at,
-      duration_seconds: duration,
-      total_sets: total_sets,
-      total_reps: total_reps,
-      total_volume: total_volume
-    })
-    |> Repo.update()
+    {:ok, updated} =
+      workout
+      |> Workout.changeset(%{
+        status: "completed",
+        finished_at: finished_at,
+        duration_seconds: duration,
+        total_sets: total_sets,
+        total_reps: total_reps,
+        total_volume: total_volume
+      })
+      |> Repo.update()
+
+    Records.compute_and_save_prs(updated)
+    {:ok, updated}
   end
 
   @doc "Discards an in-progress workout."

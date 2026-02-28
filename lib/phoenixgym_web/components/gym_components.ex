@@ -446,6 +446,43 @@ defmodule PhoenixgymWeb.GymComponents do
     """
   end
 
+  # ── Volume Bar Chart ────────────────────────────────────────────────────
+
+  attr :data, :list,
+    required: true,
+    doc: "List of {week_label, volume} tuples; volume is a Decimal"
+
+  def volume_chart(assigns) do
+    max_vol =
+      Enum.reduce(assigns.data, 0.0, fn {_label, vol}, acc ->
+        f = Decimal.to_float(vol || Decimal.new(0))
+        max(f, acc)
+      end)
+
+    max_height = if max_vol > 0, do: max_vol, else: 1.0
+
+    assigns = assign(assigns, :max_height, max_height)
+
+    ~H"""
+    <div class="w-full" id="volume-chart">
+      <div class="flex items-end justify-between gap-1 h-24">
+        <div
+          :for={{label, vol} <- @data}
+          class="flex-1 flex flex-col items-center gap-0.5 min-w-0"
+          title={"#{label}: #{format_volume(vol)} kg"}
+        >
+          <div
+            class="w-full bg-primary rounded-t transition-all min-h-[4px]"
+            style={"height: #{max(Decimal.to_float(vol || Decimal.new(0)) / @max_height * 96, 2)}%"}
+          >
+          </div>
+          <span class="text-[10px] text-base-content/60 truncate w-full text-center">{label}</span>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   # ── Helpers ─────────────────────────────────────────────────────────────
 
   defp format_datetime(nil), do: ""

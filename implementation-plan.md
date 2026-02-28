@@ -531,11 +531,11 @@ Testing tasks:
 **Goal**: Automatic PR tracking and dashboard charts.
 
 Tasks:
-- [ ] PR computation hook on workout completion (WorkoutStats context)
+- [x] PR computation hook on workout completion (WorkoutStats context)
   - Compare against existing PRs per exercise
   - Create new PersonalRecord rows when beaten
-- [ ] PR display on exercise detail page (all-time bests table)
-- [ ] Dashboard LiveView:
+- [x] PR display on exercise detail page (all-time bests table)
+- [x] Dashboard LiveView:
   - Weekly volume bar chart (SVG or simple CSS bars)
   - Workouts this week / this month counters
   - Top muscle groups (computed from recent workouts)
@@ -543,11 +543,11 @@ Tasks:
   - Streak counter
 
 Testing tasks:
-- [ ] `WorkoutStats.compute_prs/1` unit tests (pure logic, no DB): correctly identifies `max_weight`, `max_reps`, `max_volume_set` winners; estimated 1RM formula (`weight × (1 + reps/30)`) is accurate; no PR created when no existing record is beaten; new PR upserts correctly when beaten
-- [ ] `WorkoutStats.compute_prs/1` integration test: finish a workout with a new PR → `personal_records` row inserted; finish second workout with lower weight → no new row; finish third workout with higher weight → row updated/inserted with new value
-- [ ] `Records` context: `list_prs_for_exercise/1` returns one row per `record_type`; `get_recent_prs/1` returns latest N records ordered by `achieved_at`
-- [ ] Dashboard stats queries: `weekly_volume/0` returns 8 data points (one per week, zero-padded); `streak_count/0` returns correct consecutive-day count; `top_muscle_groups/1` returns correct ranking
-- [ ] `DashboardLive.Index` LiveView test: mounts with correct stat values; quick-start routines listed; chart SVG rendered with correct number of bars
+- [x] `WorkoutStats.compute_prs/1` unit tests (pure logic, no DB): correctly identifies `max_weight`, `max_reps`, `max_volume_set` winners; estimated 1RM formula (`weight × (1 + reps/30)`) is accurate; no PR created when no existing record is beaten; new PR upserts correctly when beaten
+- [x] `WorkoutStats.compute_prs/1` integration test: finish a workout with a new PR → `personal_records` row inserted; finish second workout with lower weight → no new row; finish third workout with higher weight → row updated/inserted with new value
+- [x] `Records` context: `list_prs_for_exercise/1` returns one row per `record_type`; `get_recent_prs/1` returns latest N records ordered by `achieved_at`
+- [x] Dashboard stats queries: `weekly_volume/0` returns 8 data points (one per week, zero-padded); `streak_count/0` returns correct consecutive-day count; `top_muscle_groups/1` returns correct ranking
+- [x] `DashboardLive.Index` LiveView test: mounts with correct stat values; quick-start routines listed; chart SVG rendered with correct number of bars
 
 ### Phase 7 — Profile & Settings
 
