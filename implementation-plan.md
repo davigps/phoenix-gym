@@ -464,21 +464,21 @@ Testing tasks:
 **Goal**: Full CRUD for routines with exercise management.
 
 Tasks:
-- [ ] Routine list with cards (name, exercise count, last used)
-- [ ] Create routine LiveView (name + notes form)
-- [ ] Routine edit LiveView:
+- [x] Routine list with cards (name, exercise count, last used)
+- [x] Create routine LiveView (name + notes form)
+- [x] Routine edit LiveView:
   - Add exercises via exercise picker modal
   - Set target sets per exercise (inline number input)
   - Reorder exercises (up/down buttons)
   - Remove exercises
-- [ ] Routine show/preview page
-- [ ] Duplicate routine action
-- [ ] Delete routine with confirmation
+- [x] Routine show/preview page
+- [x] Duplicate routine action
+- [x] Delete routine with confirmation
 
 Testing tasks:
-- [ ] `Routines` context: `create_routine/1` enforces name presence; `add_exercise_to_routine/3` assigns correct position; `reorder_exercises/2` updates positions atomically; `duplicate_routine/1` deep-copies exercises with correct positions; `delete_routine/1` cascades to `routine_exercises`
-- [ ] `RoutineLive.Index` LiveView test: empty state renders CTA; routines list renders cards with correct exercise count; delete flow shows confirmation modal then removes card
-- [ ] `RoutineLive.Edit` LiveView test: add exercise via picker appends to list; up/down reorder updates order in assigns; remove exercise removes row; save persists changes and redirects; unsaved changes warn on navigate away
+- [x] `Routines` context: `create_routine/1` enforces name presence; `add_exercise_to_routine/3` assigns correct position; `reorder_exercises/2` updates positions atomically; `duplicate_routine/1` deep-copies exercises with correct positions; `delete_routine/1` cascades to `routine_exercises`
+- [x] `RoutineLive.Index` LiveView test: empty state renders CTA; routines list renders cards with correct exercise count; delete flow shows confirmation modal then removes card
+- [x] `RoutineLive.Edit` LiveView test: add exercise via picker appends to list; up/down reorder updates order in assigns; remove exercise removes row; save persists changes and redirects; unsaved changes warn on navigate away
 
 ### Phase 4 — Active Workout (Core Feature)
 

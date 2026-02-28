@@ -1,0 +1,2 @@
+@implementation-plan.md work on the Phase X, dont forget about the testing tasks. Use TDD, implement tests first. After your work its all done, mark all
+    tasks of this phase in the implementation plan file as done.

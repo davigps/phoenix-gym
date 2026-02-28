@@ -33,6 +33,9 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
               placeholder="Routine name (e.g. Push Day A)"
               autofocus
             />
+            <p :for={{msg, _} <- @form[:name].errors} class="text-error text-sm mt-1">
+              {msg}
+            </p>
             <textarea
               name="routine[notes]"
               class="textarea textarea-bordered w-full"
@@ -118,7 +121,7 @@ defmodule PhoenixgymWeb.RoutineLive.Index do
         {:noreply, push_navigate(socket, to: "/routines/#{routine.id}/edit")}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(Map.put(changeset, :action, :insert)))}
     end
   end
 end

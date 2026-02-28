@@ -34,6 +34,9 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
               class="input input-bordered w-full font-semibold"
               placeholder="Routine name"
             />
+            <p :for={{msg, _} <- @form[:name].errors} class="text-error text-sm mt-1">
+              {msg}
+            </p>
             <textarea
               name="routine[notes]"
               class="textarea textarea-bordered w-full"
@@ -176,7 +179,7 @@ defmodule PhoenixgymWeb.RoutineLive.Edit do
          |> push_navigate(to: "/routines/#{socket.assigns.routine.id}")}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(Map.put(changeset, :action, :update)))}
     end
   end
 

@@ -2,6 +2,7 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
   use PhoenixgymWeb, :live_view
 
   alias Phoenixgym.Routines
+  import PhoenixgymWeb.GymComponents
 
   @impl true
   def render(assigns) do
@@ -62,6 +63,15 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
             </button>
           </div>
         </div>
+
+        <.confirm_modal
+          id="delete-routine-modal"
+          title="Delete Routine"
+          message="Are you sure you want to delete this routine? This cannot be undone."
+          confirm_event="confirm_delete"
+          confirm_label="Delete"
+          confirm_class="btn-error"
+        />
       </div>
     </Layouts.app>
     """
@@ -106,6 +116,13 @@ defmodule PhoenixgymWeb.RoutineLive.Show do
 
   @impl true
   def handle_event("delete", _params, socket) do
+    {:noreply,
+     socket
+     |> push_event("js-exec", %{to: "#delete-routine-modal", attr: "showModal"})}
+  end
+
+  @impl true
+  def handle_event("confirm_delete", _params, socket) do
     case Routines.delete_routine(socket.assigns.routine) do
       {:ok, _} ->
         {:noreply,
