@@ -111,9 +111,18 @@ Use your real GitHub username and repo URL.
 
 Railway sets `PORT` automatically; your `config/runtime.exs` already uses it.
 
----
+### 4.1 Ensure migrations run automatically on every deploy
 
-## Step 5: Get a public URL
+The app runs as an **Elixir release** (no `mix` at runtime). The start command runs the release’s `bin/migrate` then `bin/server`, so migrations run automatically on every deploy.
+
+- **Nixpacks:** The repo’s `nixpacks.toml` defines the start command. Leave **“Start Command”** in Railway **empty** so it uses that.
+- **Railpack** (Railway’s newer builder): If you see `mix: command not found` in logs, Railway is using Railpack. Set **“Start Command”** in the Phoenix app service to:
+  ```bash
+  _build/prod/rel/phoenixgym/bin/migrate && _build/prod/rel/phoenixgym/bin/server
+  ```
+  so the release runs migrations then starts (no `mix` needed).
+
+---
 
 1. In the **Phoenix app service**, open **Settings** → **Networking** (or **Variables** / **Networking**).
 2. Click **“Generate Domain”** (or **“Add public URL”**).
@@ -144,9 +153,11 @@ If you have a domain (e.g. from Route 53 or another registrar):
 
 ### Troubleshooting: "relation X does not exist" (missing tables)
 
-If you see **`relation "workouts" does not exist`** or similar, the production database has no tables because **migrations haven’t been run** (e.g. the app started before `DATABASE_URL` was set, or the first deploy failed during migrate).
+If you see **`relation "workouts" does not exist`** or similar, the production database has no tables. Usually this means either the **start command** wasn’t running migrations (e.g. it was overridden in Railway) or the first deploy started before `DATABASE_URL` was set.
 
-**Fix: run migrations against the production database.**
+**Prevent it:** Follow **Step 4.1** above so the start command is `mix ecto.migrate && mix phx.server`. Then every deploy runs migrations automatically and you don’t migrate manually.
+
+**Fix it once:** Run migrations against the production database (options below), then redeploy or refresh. After that, automatic migrations on each deploy will keep the schema up to date.
 
 **Option 1 – Railway CLI (recommended)**  
 From your project root on your machine:

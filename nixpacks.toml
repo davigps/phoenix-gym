@@ -1,11 +1,17 @@
 # Railway/Nixpacks configuration for Phoenix deployment.
 # See deploy.md for full deployment steps.
 #
-# Migrations run at START (not build): DATABASE_URL is only available at runtime.
+# We build a RELEASE and start with its binaries so we don't need mix at runtime
+# (Railway may use Railpack, which only has the release in the container).
+# Migrations run via the release's bin/migrate before bin/server.
 
 [variables]
 MIX_ENV = "prod"
 PHX_SERVER = "true"
+# Avoid "setlocale: LC_ALL: cannot change locale" and Elixir UTF-8 warnings
+LC_ALL = "C.UTF-8"
+LANG = "C.UTF-8"
+LC_CTYPE = "C.UTF-8"
 
 [phases.install]
 cmds = [
@@ -17,9 +23,10 @@ cmds = [
 [phases.build]
 cmds = [
   "mix assets.deploy",
-  "mix compile"
+  "mix compile",
+  "mix release"
 ]
 
 [start]
-# Run migrations first (runtime has DATABASE_URL), then start the server
-cmd = "mix ecto.migrate && mix phx.server"
+# Use release binaries (no mix at runtime). Migrate then start the server.
+cmd = "_build/prod/rel/phoenixgym/bin/migrate && _build/prod/rel/phoenixgym/bin/server"
