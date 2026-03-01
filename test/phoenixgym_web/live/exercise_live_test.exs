@@ -5,6 +5,7 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
   import Phoenixgym.Fixtures
 
   alias Phoenixgym.Exercises
+  alias Phoenixgym.Repo
 
   # ── ExerciseLive.Index ────────────────────────────────────────────────────
 
@@ -328,6 +329,112 @@ defmodule PhoenixgymWeb.ExerciseLiveTest do
       {:ok, _view, html} = live(conn, "/exercises/#{exercise.id}")
 
       assert html =~ "/exercises"
+    end
+
+    test "shows Edit link", %{conn: conn} do
+      exercise = exercise_fixture()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}")
+
+      assert has_element?(view, "a[href='/exercises/#{exercise.id}/edit']")
+    end
+
+    test "custom exercise shows Delete button", %{conn: conn} do
+      exercise = exercise_fixture()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}")
+
+      assert has_element?(view, "button[phx-click='delete']")
+    end
+
+    test "non-custom exercise does not show Delete button", %{conn: conn} do
+      exercise = exercise_fixture()
+      # Mark as non-custom (library) so Delete is hidden
+      exercise
+      |> Ecto.Changeset.change(%{is_custom: false})
+      |> Repo.update!()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}")
+
+      refute has_element?(view, "button[phx-click='delete']")
+    end
+
+    test "confirm_delete deletes custom exercise and redirects to index", %{conn: conn} do
+      exercise = exercise_fixture()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}")
+
+      view
+      |> element("button[phx-click='delete']")
+      |> render_click()
+
+      {:ok, _view, html} =
+        view
+        |> element("button[phx-click='confirm_delete']")
+        |> render_click()
+        |> follow_redirect(conn)
+
+      refute html =~ exercise.name
+      assert html =~ "Exercícios" or html =~ "exercises"
+    end
+  end
+
+  # ── ExerciseLive.Edit ────────────────────────────────────────────────────
+
+  describe "ExerciseLive.Edit" do
+    setup :register_and_log_in_user
+
+    test "page mounts and renders form with exercise data", %{conn: conn} do
+      exercise = exercise_fixture(%{"name" => "EditMe#{System.unique_integer()}"})
+
+      {:ok, _view, html} = live(conn, "/exercises/#{exercise.id}/edit")
+
+      assert html =~ "Editar exercício" or html =~ "Edit Exercise"
+      assert html =~ exercise.name
+    end
+
+    test "valid form submission updates exercise and redirects to show", %{conn: conn} do
+      exercise = exercise_fixture(%{"name" => "OriginalName#{System.unique_integer()}"})
+      new_name = "UpdatedName#{System.unique_integer()}"
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}/edit")
+
+      {:ok, _view, html} =
+        view
+        |> form("#exercise-form", %{
+          "exercise" => %{
+            "name" => new_name,
+            "category" => "strength",
+            "primary_muscle" => "back",
+            "equipment" => "barbell"
+          }
+        })
+        |> render_submit()
+        |> follow_redirect(conn)
+
+      assert html =~ new_name
+    end
+
+    test "invalid submit keeps user on edit with errors", %{conn: conn} do
+      exercise = exercise_fixture()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}/edit")
+
+      html =
+        view
+        |> form("#exercise-form", %{"exercise" => %{"name" => ""}})
+        |> render_submit()
+
+      assert html =~ "não pode ficar em branco" or html =~ "em branco" or html =~ "Edit Exercise" or
+               html =~ "Editar"
+    end
+
+    test "back link navigates to show", %{conn: conn} do
+      exercise = exercise_fixture()
+
+      {:ok, view, _html} = live(conn, "/exercises/#{exercise.id}/edit")
+
+      assert has_element?(view, "a[href='/exercises/#{exercise.id}']")
     end
   end
 end

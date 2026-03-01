@@ -4,6 +4,7 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
   alias Phoenixgym.Exercises
   alias Phoenixgym.Records
   alias Phoenixgym.Units
+  import PhoenixgymWeb.GymComponents
 
   @impl true
   def render(assigns) do
@@ -13,12 +14,24 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
         <%!-- Header --%>
         <div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-40 min-h-14 px-2">
           <div class="navbar-start">
-            <a href="/exercises" class="btn btn-ghost btn-sm gap-1">
+            <.link navigate="/exercises" class="btn btn-ghost btn-sm gap-1">
               <.icon name="hero-arrow-left" class="h-4 w-4" /> {gettext("Back")}
-            </a>
+            </.link>
           </div>
           <div class="navbar-center">
             <span class="font-semibold">{@exercise.name}</span>
+          </div>
+          <div class="navbar-end gap-1">
+            <.link navigate={"/exercises/#{@exercise.id}/edit"} class="btn btn-ghost btn-sm">
+              {gettext("Edit")}
+            </.link>
+            <button
+              :if={@exercise.is_custom}
+              phx-click="delete"
+              class="btn btn-ghost btn-sm text-error"
+            >
+              <.icon name="hero-trash" class="h-4 w-4" /> {gettext("Delete")}
+            </button>
           </div>
         </div>
 
@@ -52,6 +65,15 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
             </div>
           </div>
         </div>
+
+        <.confirm_modal
+          id="delete-exercise-modal"
+          title={gettext("Delete Exercise")}
+          message={gettext("Are you sure you want to delete this exercise? This cannot be undone.")}
+          confirm_event="confirm_delete"
+          confirm_label={gettext("Delete")}
+          confirm_class="btn-error"
+        />
       </div>
     </Layouts.app>
     """
@@ -84,4 +106,30 @@ defmodule PhoenixgymWeb.ExerciseLive.Show do
     do: gettext("%{count} reps", count: Decimal.to_integer(v))
 
   defp format_pr(%{value: v}, unit), do: Units.display_weight(v, unit)
+
+  @impl true
+  def handle_event("delete", _params, socket) do
+    {:noreply,
+     socket
+     |> push_event("js-exec", %{to: "#delete-exercise-modal", attr: "showModal"})}
+  end
+
+  @impl true
+  def handle_event("confirm_delete", _params, socket) do
+    case Exercises.delete_exercise(socket.assigns.exercise) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, gettext("Exercise deleted."))
+         |> push_navigate(to: "/exercises")}
+
+      {:error, _changeset} ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           gettext("Could not delete exercise. It may be in use in routines or workouts.")
+         )}
+    end
+  end
 end

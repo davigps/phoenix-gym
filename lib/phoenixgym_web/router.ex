@@ -51,6 +51,7 @@ defmodule PhoenixgymWeb.Router do
       # Exercises
       live "/exercises", ExerciseLive.Index, :index
       live "/exercises/new", ExerciseLive.New, :new
+      live "/exercises/:id/edit", ExerciseLive.Edit, :edit
       live "/exercises/:id", ExerciseLive.Show, :show
 
       # Routines
