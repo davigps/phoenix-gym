@@ -13,33 +13,27 @@ defmodule Phoenixgym.AccountsFixtures do
   def valid_user_password, do: "hello world!"
 
   def valid_user_attributes(attrs \\ %{}) do
-    Enum.into(attrs, %{
-      email: unique_user_email()
-    })
+    base = %{
+      email: unique_user_email(),
+      password: valid_user_password(),
+      password_confirmation: valid_user_password()
+    }
+
+    Enum.into(attrs, base)
   end
 
   def unconfirmed_user_fixture(attrs \\ %{}) do
-    attrs
-    |> valid_user_attributes()
-    |> then(fn attrs ->
-      %Accounts.User{}
-      |> Accounts.User.email_changeset(attrs)
-      |> Phoenixgym.Repo.insert!()
-    end)
+    base_attrs = %{email: unique_user_email()}
+    attrs = Enum.into(attrs, base_attrs)
+
+    %Accounts.User{}
+    |> Accounts.User.email_changeset(attrs)
+    |> Phoenixgym.Repo.insert!()
   end
 
   def user_fixture(attrs \\ %{}) do
     user = unconfirmed_user_fixture(attrs)
-
-    token =
-      extract_user_token(fn url ->
-        Accounts.deliver_login_instructions(user, url)
-      end)
-
-    {:ok, {user, _expired_tokens}} =
-      Accounts.login_user_by_magic_link(token)
-
-    user
+    user |> Accounts.User.confirm_changeset() |> Phoenixgym.Repo.update!()
   end
 
   def user_scope_fixture do

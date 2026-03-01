@@ -5,6 +5,7 @@ defmodule Phoenixgym.Accounts.User do
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true, redact: true
+    field :password_confirmation, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
@@ -57,6 +58,22 @@ defmodule Phoenixgym.Accounts.User do
   end
 
   @doc """
+  A user changeset for registration (email + password).
+
+  Pipes `email_changeset/3` and `password_changeset/3`. Accepts `:email`,
+  `:password`, and `:password_confirmation` in attrs.
+
+  ## Options
+
+  Same as `email_changeset/3` (e.g. `:validate_unique`).
+  """
+  def registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> email_changeset(attrs, opts)
+    |> password_changeset(attrs, opts)
+  end
+
+  @doc """
   A user changeset for changing the password.
 
   It is important to validate the length of the password, as long passwords may
@@ -71,9 +88,18 @@ defmodule Phoenixgym.Accounts.User do
       validations on a LiveView form), this option can be set to `false`.
       Defaults to `true`.
   """
-  def password_changeset(user, attrs, opts \\ []) do
+  def password_changeset(user, attrs, opts \\ [])
+
+  def password_changeset(user, attrs, opts) when not is_struct(user, Ecto.Changeset) do
     user
-    |> cast(attrs, [:password])
+    |> cast(attrs, [:password, :password_confirmation])
+    |> validate_confirmation(:password, message: "does not match password")
+    |> validate_password(opts)
+  end
+
+  def password_changeset(%Ecto.Changeset{} = changeset, attrs, opts) do
+    changeset
+    |> cast(attrs, [:password, :password_confirmation])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password(opts)
   end

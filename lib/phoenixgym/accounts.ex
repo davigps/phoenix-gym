@@ -76,7 +76,7 @@ defmodule Phoenixgym.Accounts do
   """
   def register_user(attrs) do
     case %User{}
-         |> User.email_changeset(attrs)
+         |> User.registration_changeset(attrs)
          |> Repo.insert() do
       {:ok, user} ->
         {:ok, user |> User.confirm_changeset() |> Repo.update!()}
@@ -84,6 +84,21 @@ defmodule Phoenixgym.Accounts do
       error ->
         error
     end
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user registration (email + password).
+
+  See `Phoenixgym.Accounts.User.registration_changeset/3` for options (e.g. `:validate_unique`).
+
+  ## Examples
+
+      iex> change_user_registration(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_registration(user, attrs \\ %{}, opts \\ []) do
+    User.registration_changeset(user, attrs, opts)
   end
 
   ## Settings

@@ -47,7 +47,7 @@ defmodule PhoenixgymWeb.UserLive.RegistrationTest do
         |> follow_redirect(conn, ~p"/users/log-in")
 
       assert html =~
-               ~r/Account created\. We sent a login link to your email\./
+               ~r/Account created\. You can now log in\./
     end
 
     test "renders errors for duplicated email", %{conn: conn} do
@@ -58,7 +58,11 @@ defmodule PhoenixgymWeb.UserLive.RegistrationTest do
       result =
         lv
         |> form("#registration_form",
-          user: %{"email" => user.email}
+          user: %{
+            "email" => user.email,
+            "password" => valid_user_password(),
+            "password_confirmation" => valid_user_password()
+          }
         )
         |> render_submit()
 
