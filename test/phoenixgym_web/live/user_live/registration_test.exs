@@ -47,7 +47,7 @@ defmodule PhoenixgymWeb.UserLive.RegistrationTest do
         |> follow_redirect(conn, ~p"/users/log-in")
 
       assert html =~
-               ~r/An email was sent to .*, please access it to confirm your account/
+               ~r/Account created\. We sent a login link to your email\./
     end
 
     test "renders errors for duplicated email", %{conn: conn} do

@@ -19,12 +19,13 @@ defmodule Phoenixgym.AccountsFixtures do
   end
 
   def unconfirmed_user_fixture(attrs \\ %{}) do
-    {:ok, user} =
-      attrs
-      |> valid_user_attributes()
-      |> Accounts.register_user()
-
-    user
+    attrs
+    |> valid_user_attributes()
+    |> then(fn attrs ->
+      %Accounts.User{}
+      |> Accounts.User.email_changeset(attrs)
+      |> Phoenixgym.Repo.insert!()
+    end)
   end
 
   def user_fixture(attrs \\ %{}) do

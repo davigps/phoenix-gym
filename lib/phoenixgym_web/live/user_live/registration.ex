@@ -68,7 +68,7 @@ defmodule PhoenixgymWeb.UserLive.Registration do
          socket
          |> put_flash(
            :info,
-           "An email was sent to #{user.email}, please access it to confirm your account."
+           "Account created. We sent a login link to your email."
          )
          |> push_navigate(to: ~p"/users/log-in")}
 

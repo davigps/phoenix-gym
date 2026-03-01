@@ -75,9 +75,15 @@ defmodule Phoenixgym.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.email_changeset(attrs)
-    |> Repo.insert()
+    case %User{}
+         |> User.email_changeset(attrs)
+         |> Repo.insert() do
+      {:ok, user} ->
+        {:ok, user |> User.confirm_changeset() |> Repo.update!()}
+
+      error ->
+        error
+    end
   end
 
   ## Settings

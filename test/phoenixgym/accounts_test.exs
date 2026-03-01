@@ -82,7 +82,7 @@ defmodule Phoenixgym.AccountsTest do
       {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
       assert user.email == email
       assert is_nil(user.hashed_password)
-      assert is_nil(user.confirmed_at)
+      assert user.confirmed_at
       assert is_nil(user.password)
     end
   end
