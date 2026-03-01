@@ -15,6 +15,8 @@ defmodule Phoenixgym.Release do
 
   def seed do
     load_app()
+    # Start the application so the Repo is running (required when running in release eval)
+    {:ok, _} = Application.ensure_all_started(@app)
     Phoenixgym.Seeds.seed_exercises()
   end
 
