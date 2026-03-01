@@ -71,7 +71,10 @@ defmodule PhoenixgymWeb.GymComponents do
           <% else %>
             <.icon
               name={if(@active == tab.id, do: tab.icon, else: String.replace(tab.icon, "-solid", ""))}
-              class="h-6 w-6"
+              class={[
+                "h-6 w-6",
+                if(@active == tab.id, do: "text-primary", else: "text-base-content/50")
+              ]}
             />
             <span class={[
               "text-[10px] font-medium leading-tight",
