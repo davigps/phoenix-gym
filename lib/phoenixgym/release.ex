@@ -13,6 +13,11 @@ defmodule Phoenixgym.Release do
     end
   end
 
+  def seed do
+    load_app()
+    Phoenixgym.Seeds.seed_exercises()
+  end
+
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))

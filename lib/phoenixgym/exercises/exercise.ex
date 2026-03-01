@@ -4,6 +4,7 @@ defmodule Phoenixgym.Exercises.Exercise do
 
   schema "exercises" do
     field :name, :string
+    field :code, :string
     field :category, :string
     field :primary_muscle, :string
     field :secondary_muscles, {:array, :string}, default: []
@@ -26,6 +27,7 @@ defmodule Phoenixgym.Exercises.Exercise do
     exercise
     |> cast(attrs, [
       :name,
+      :code,
       :category,
       :primary_muscle,
       :secondary_muscles,
@@ -40,6 +42,7 @@ defmodule Phoenixgym.Exercises.Exercise do
     |> validate_inclusion(:primary_muscle, @muscles, message: "must be a valid muscle group")
     |> validate_inclusion(:equipment, @equipment, message: "must be a valid equipment type")
     |> unique_constraint(:name)
+    |> unique_constraint(:code)
   end
 
   def categories, do: @categories
